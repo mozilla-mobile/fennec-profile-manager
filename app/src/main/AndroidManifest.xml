@@ -5,7 +5,8 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.mozilla.fennecprofilebackuphelper">
+    package="org.mozilla.fennecprofilebackuphelper"
+    android:sharedUserId="org.mozilla.firefox.sharedID">
 
     <application
         android:allowBackup="true"
