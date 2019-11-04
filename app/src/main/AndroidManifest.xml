@@ -5,8 +5,11 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.mozilla.fennecprofilebackuphelper"
-    android:sharedUserId="org.mozilla.firefox.sharedID">
+    android:sharedUserId="org.mozilla.firefox.sharedID"
+    android:allowBackup="false"
+    tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
     <application
         android:allowBackup="true"
