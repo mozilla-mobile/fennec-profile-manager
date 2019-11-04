@@ -48,3 +48,28 @@ detekt {
         }
     }
 }
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.35.0"
+    // additional 3rd party ruleset(s) can be specified here
+    // just add them to the classpath (e.g. ktlint 'groupId:artifactId:version') and
+    // ktlint will pick them up
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = 'Check Kotlin code style.'
+    classpath = configurations.ktlint
+    main = 'com.pinterest.ktlint.Main'
+    args 'app/src/**/*.kt'
+}
+
+task ktlintFormat(type: JavaExec, group: 'formatting') {
+    description = 'Fix Kotlin code style deviations.'
+    classpath = configurations.ktlint
+    main = 'com.pinterest.ktlint.Main'
+    args '-F', 'app/src/**/*.kt'
+}
