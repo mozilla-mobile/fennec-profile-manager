@@ -19,12 +19,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         val fennecContext = createPackageContext("org.mozilla.firefox", Context.CONTEXT_RESTRICTED)
-        val fennecInternalStorage = File(fennecContext.filesDir.parent)
+        val fennecInternalStorage = File(fennecContext.filesDir.parent!!)
 
+        @Suppress("MagicNumber")
         fab.setOnClickListener {
             description.text = getString(R.string.poc_results_description)
             description.textSize = 16f
-            results.text = fennecInternalStorage.list().joinToString("\n")
+            results.text = fennecInternalStorage.list()!!.joinToString("\n")
             fab.hide()
         }
     }
