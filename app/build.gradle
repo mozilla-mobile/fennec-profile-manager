@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "org.mozilla.fennecprofilebackuphelper"
+        applicationId "org.mozilla.fpm"
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
