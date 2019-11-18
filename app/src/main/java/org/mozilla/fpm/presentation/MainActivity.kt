@@ -4,35 +4,50 @@
 
 package org.mozilla.fpm.presentation
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.fpm.R
-import java.io.File
+import org.mozilla.fpm.models.Backup
+import org.mozilla.fpm.presentation.mvp.MainContract
+import org.mozilla.fpm.presentation.mvp.MainPresenter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View {
     private val TAG = MainActivity::class.java.canonicalName
+
+    private lateinit var presenter: MainPresenter
+    private lateinit var adapter: BackupsRVAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         title = getString(R.string.app_name)
+        presenter = MainPresenter()
+        presenter.attachView(this@MainActivity)
 
-        try {
-        val fennecContext = createPackageContext("org.mozilla.firefox", Context.CONTEXT_RESTRICTED)
-        val fennecInternalStorage = File(fennecContext.filesDir.parent!!)
+        adapter = BackupsRVAdapter()
+        backups_rv.layoutManager = LinearLayoutManager(this@MainActivity)
+        backups_rv.addItemDecoration(DividerItemDecoration(this@MainActivity, LinearLayoutManager.VERTICAL))
+        backups_rv.adapter = adapter
+        presenter.getBackups()
 
-            @Suppress("MagicNumber")
-            add_fab.setOnClickListener {
-                //description.text = getString(R.string.poc_results_description)
-                //description.textSize = 16f
-                //results.text = fennecInternalStorage.list()!!.joinToString("\n")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, e.toString())
-        }
+        create_fab.setOnClickListener {presenter.createBackup()}
+        import_fab.setOnClickListener {presenter.importBackup()}
+    }
+
+    override fun onBackupsLoaded(data: List<Backup>) {
+        adapter.updateData(data)
+    }
+
+    override fun onBackupCreated(backup: Backup) {
+        adapter.add(backup)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.detachView()
     }
 }
