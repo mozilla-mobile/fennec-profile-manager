@@ -4,7 +4,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 
 <resources>
-    <string name="app_name">Firefox Profile Backup Helper</string>
+    <string name="app_name">Fennec Profile Manager</string>
     <string name="poc_description">Press the fab to list Fennec\'s internal storage files.\n
         This app assumes you have \'org.mozilla.firefox\' installed and signed with the same key</string>
     <string name="poc_results_description">All the files in Fennec\'s internal storage:</string>
