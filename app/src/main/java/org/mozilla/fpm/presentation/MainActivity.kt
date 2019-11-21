@@ -15,8 +15,6 @@ import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 
 class MainActivity : AppCompatActivity(), MainContract.View {
-    private val TAG = MainActivity::class.java.canonicalName
-
     private lateinit var presenter: MainPresenter
     private lateinit var adapter: BackupsRVAdapter
 
@@ -34,8 +32,8 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         backups_rv.adapter = adapter
         presenter.getBackups()
 
-        create_fab.setOnClickListener {presenter.createBackup()}
-        import_fab.setOnClickListener {presenter.importBackup()}
+        create_fab.setOnClickListener { presenter.createBackup() }
+        import_fab.setOnClickListener { presenter.importBackup() }
     }
 
     override fun onBackupsLoaded(data: List<Backup>) {

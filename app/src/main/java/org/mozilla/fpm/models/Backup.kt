@@ -4,4 +4,4 @@
 
 package org.mozilla.fpm.models
 
-data class Backup(val id: Int, val name: String, val created_at: String)
+data class Backup(val id: Int, val name: String, val createdAt: String)

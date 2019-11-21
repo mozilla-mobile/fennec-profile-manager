@@ -46,10 +46,10 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         private val title: TextView = itemView.findViewById(R.id.title)
         private val date: TextView = itemView.findViewById(R.id.date)
 
-        /* package-private */  fun bind(position: Int) {
+        fun bind(position: Int) {
             val backup: Backup = dataSource[position]
             title.text = backup.name
-            date.text = backup.created_at
+            date.text = backup.createdAt
         }
     }
 }

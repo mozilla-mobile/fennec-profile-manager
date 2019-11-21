@@ -6,7 +6,7 @@ package org.mozilla.fpm.presentation.mvp
 
 import org.mozilla.fpm.data.BackupsRepository
 
-class MainPresenter: MainContract.Presenter {
+class MainPresenter : MainContract.Presenter {
 
     private var view: MainContract.View? = null
 
@@ -17,11 +17,11 @@ class MainPresenter: MainContract.Presenter {
     }
 
     override fun importBackup() {
-
+        // todo
     }
 
     override fun createBackup() {
-
+        // todo
     }
 
     override fun attachView(view: MainContract.View) {
