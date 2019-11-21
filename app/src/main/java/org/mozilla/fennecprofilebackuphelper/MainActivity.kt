@@ -4,11 +4,11 @@
 
 package org.mozilla.fennecprofilebackuphelper
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.mozilla.fennecprofilebackuphelper.FileUtils.makeFirefoxPackageContext
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -18,15 +18,30 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val fennecContext = createPackageContext("org.mozilla.firefox", Context.CONTEXT_RESTRICTED)
-        val fennecInternalStorage = File(fennecContext.filesDir.parent!!)
-
         @Suppress("MagicNumber")
         fab.setOnClickListener {
-            description.text = getString(R.string.poc_results_description)
-            description.textSize = 16f
-            results.text = fennecInternalStorage.list()!!.joinToString("\n")
-            fab.hide()
+            val fennecContext = makeFirefoxPackageContext(applicationContext)
+
+            if (fennecContext == null) {
+                description.text = getString(R.string.poc_results_description_package_not_found)
+                description.textSize = 16f
+            } else {
+                val fennecInternalStorage = File(fennecContext.filesDir.parent!!)
+                description.text = getString(R.string.poc_results_description)
+                description.textSize = 16f
+
+                with(fennecInternalStorage.list()) {
+                    when (this) {
+                        null -> {
+
+                        }
+                        else -> {
+                            FileUtils.zip(this, "tmp_" + System.currentTimeMillis())
+                            results.text = this.joinToString("\n")
+                        }
+                    }
+                }
+            }
         }
     }
 }
