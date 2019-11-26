@@ -6,7 +6,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.mozilla.fennecprofilebackuphelper"
+    package="org.mozilla.fpm"
     android:sharedUserId="org.mozilla.firefox.sharedID"
     android:allowBackup="false"
     tools:ignore="AllowBackup,GoogleAppIndexingWarning">
@@ -22,9 +22,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name="org.mozilla.fpm.presentation.MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

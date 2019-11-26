@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='Fennec Profile Backup Helper'
+rootProject.name='Fennec Profile Manager'
