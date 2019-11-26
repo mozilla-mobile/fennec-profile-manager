@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/Fennec Profile Manager.iml" filepath="$PROJECT_DIR$/Fennec Profile Manager.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
-=======
-      <module fileurl="file://$PROJECT_DIR$/Fennec Profile Backup Helper.iml" filepath="$PROJECT_DIR$/Fennec Profile Backup Helper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-    </modules>
-  </component>
-</project>
->>>>>>> For #9 - Add zip/unzip business logic
