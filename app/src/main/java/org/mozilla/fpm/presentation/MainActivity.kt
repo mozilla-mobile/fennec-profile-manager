@@ -13,7 +13,6 @@ import org.mozilla.fpm.R
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
-import java.io.File
 
 class MainActivity : AppCompatActivity(), MainContract.View {
     private lateinit var presenter: MainPresenter
