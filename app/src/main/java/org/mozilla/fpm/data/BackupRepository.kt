@@ -6,11 +6,4 @@ package org.mozilla.fpm.data
 
 import org.mozilla.fpm.models.Backup
 
-class BackupsRepository {
-
-    fun getSampleData(): List<Backup> {
-        return listOf(Backup(0, "Backup 1", "15 nov 2019"),
-            Backup(1, "Backup 2", "17 nov 2019")
-        )
-    }
-}
+interface BackupRepository : Repository<Backup, Int>
