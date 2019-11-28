@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.NonNull
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.mozilla.fpm.R
 import org.mozilla.fpm.models.Backup
@@ -16,6 +17,7 @@ import org.mozilla.fpm.models.Backup
 class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>() {
 
     private var dataSource: MutableList<Backup> = ArrayList()
+    private lateinit var listener: MenuListener
 
     fun updateData(data: List<Backup>) {
         dataSource = data.toMutableList()
@@ -45,11 +47,30 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.title)
         private val date: TextView = itemView.findViewById(R.id.date)
+        private val apply: ConstraintLayout = itemView.findViewById(R.id.apply_container)
+        private val share: ConstraintLayout = itemView.findViewById(R.id.share_container)
+        private val edit: ConstraintLayout = itemView.findViewById(R.id.edit_container)
+        private val delete: ConstraintLayout = itemView.findViewById(R.id.delete_container)
 
         fun bind(position: Int) {
             val backup: Backup = dataSource[position]
             title.text = backup.name
             date.text = backup.createdAt
+            apply.setOnClickListener { listener.onApplyClick(backup) }
+            share.setOnClickListener { listener.onShareClick(backup) }
+            edit.setOnClickListener { listener.onEditClick(backup) }
+            delete.setOnClickListener { listener.onDeleteClick(backup) }
         }
+    }
+
+    fun setListener(listener: MenuListener) {
+        this.listener = listener
+    }
+
+    interface MenuListener {
+        fun onApplyClick(item: Backup)
+        fun onShareClick(item: Backup)
+        fun onEditClick(item: Backup)
+        fun onDeleteClick(item: Backup)
     }
 }
