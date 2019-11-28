@@ -14,7 +14,7 @@ import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.MenuListener {
     private lateinit var presenter: MainPresenter
     private lateinit var adapter: BackupsRVAdapter
 
@@ -38,10 +38,27 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     override fun onBackupsLoaded(data: List<Backup>) {
         adapter.updateData(data)
+        adapter.setListener(this@MainActivity)
     }
 
     override fun onBackupCreated(backup: Backup) {
         adapter.add(backup)
+    }
+
+    override fun onApplyClick(item: Backup) {
+        TODO("not implemented")
+    }
+
+    override fun onShareClick(item: Backup) {
+        TODO("not implemented")
+    }
+
+    override fun onEditClick(item: Backup) {
+        TODO("not implemented")
+    }
+
+    override fun onDeleteClick(item: Backup) {
+        TODO("not implemented")
     }
 
     override fun onDestroy() {
