@@ -4,16 +4,17 @@
 
 package org.mozilla.fpm.presentation.mvp
 
-import org.mozilla.fpm.data.BackupsRepository
+import org.mozilla.fpm.data.BackupRepository
+import org.mozilla.fpm.data.BackupRepositoryImpl
 
 class MainPresenter : MainContract.Presenter {
 
     private var view: MainContract.View? = null
 
-    private val backupsRepository: BackupsRepository = BackupsRepository()
+    private val backupsRepository: BackupRepository = BackupRepositoryImpl
 
     override fun getBackups() {
-        view?.onBackupsLoaded(backupsRepository.getSampleData())
+        view?.onBackupsLoaded(backupsRepository.getAll())
     }
 
     override fun importBackup() {
