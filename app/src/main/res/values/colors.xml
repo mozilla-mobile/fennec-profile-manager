@@ -9,4 +9,7 @@
     <color name="colorAccent">#FFFFFF</color>
 
     <color name="firefox_orange">#E55B0A</color>
+    <color name="red">#E5181F</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

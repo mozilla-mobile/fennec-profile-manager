@@ -8,4 +8,8 @@
         This app assumes you have \'org.mozilla.firefox\' installed and signed with the same key</string>
     <string name="poc_results_description">All the files in Fennec\'s internal storage:</string>
     <string name="poc_results_description_package_not_found">Firefox seems to not be installed?</string>
+    <string name="delete">Delete</string>
+    <string name="apply">Apply</string>
+    <string name="share">Share</string>
+    <string name="edit">Edit</string>
 </resources>
