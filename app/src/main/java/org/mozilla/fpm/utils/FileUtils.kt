@@ -26,6 +26,9 @@ import javax.crypto.spec.IvParameterSpec
 object FileUtils {
     private val BUFFER = 8192
 
+    /**
+     *
+     */
     fun makeFirefoxPackageContext(context: Context): Context? {
         try {
             return context.createPackageContext("org.mozilla.firefox", Context.CONTEXT_RESTRICTED)
@@ -36,6 +39,9 @@ object FileUtils {
         return null
     }
 
+    /**
+     *
+     */
     @Throws(Exception::class)
     fun zip(files: Array<String>, zipFileName: String) {
         val dest = FileOutputStream(zipFileName)
@@ -61,6 +67,9 @@ object FileUtils {
         out.close()
     }
 
+    /**
+     *
+     */
     @Throws(Exception::class)
     fun unzip(zipFileLocation: String, targetLocation: String) {
         val fileInputStream = FileInputStream(zipFileLocation)
@@ -113,6 +122,9 @@ object FileUtils {
         dcipher!!.init(Cipher.DECRYPT_MODE, key, paramSpec)
     }
 
+    /**
+     *
+     */
     @Throws(IOException::class)
     fun encrypt(`is`: InputStream, ostream: OutputStream) {
         call()
@@ -133,6 +145,9 @@ object FileUtils {
         os.close()
     }
 
+    /**
+     *
+     */
     @Throws(IOException::class)
     fun decrypt(`is`: InputStream, os: OutputStream) {
         call()
@@ -151,5 +166,26 @@ object FileUtils {
         cis.close()
         `is`.close()
         os.close()
+    }
+
+    /**
+     *
+     */
+    fun listFilesAtPath(path: String): Array<String>? {
+        return File(path).list()
+    }
+
+    /**
+     *
+     */
+    fun createFileNameAtPath(path: String, name: String): Boolean {
+        return File("$path/$name").createNewFile()
+    }
+
+    /***
+     *
+     */
+    fun removeFileAtPath(path: String): Boolean {
+        return File(path).delete()
     }
 }

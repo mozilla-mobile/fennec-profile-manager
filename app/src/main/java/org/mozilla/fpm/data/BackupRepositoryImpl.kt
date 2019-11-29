@@ -1,28 +1,59 @@
 package org.mozilla.fpm.data
 
-import android.content.Context
 import org.mozilla.fpm.models.Backup
+import org.mozilla.fpm.utils.FileUtils
 
 object BackupRepositoryImpl: BackupRepository {
-    lateinit var ctx: Context
+    private const val BACKUP_STORAGE_RELATIVE_PATH = "/backups"
 
     override fun add(t: Backup) {
-
+        FileUtils.createFileNameAtPath(BACKUP_STORAGE_RELATIVE_PATH, t.name)
     }
 
     override fun remove(k: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var index = 0
+
+        FileUtils.listFilesAtPath(BACKUP_STORAGE_RELATIVE_PATH)!!.forEach {
+            if (index == k) {
+                FileUtils.removeFileAtPath("$BACKUP_STORAGE_RELATIVE_PATH/$it")
+            }
+            index++
+        }
     }
 
     override fun update(t: Backup, k: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        var index = 0
+
+        FileUtils.listFilesAtPath(BACKUP_STORAGE_RELATIVE_PATH)!!.forEach {
+            if (index == k) {
+                FileUtils.removeFileAtPath("$BACKUP_STORAGE_RELATIVE_PATH/$it")
+                FileUtils.createFileNameAtPath(BACKUP_STORAGE_RELATIVE_PATH, t.name)
+            }
+            index++
+        }
     }
 
     override fun get(k: Int): Backup {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val backupsList : MutableList<Backup> = arrayListOf()
+        var index = 0
+
+        FileUtils.listFilesAtPath(BACKUP_STORAGE_RELATIVE_PATH)!!.forEach {
+            backupsList.add(Backup(index, it, "00:00:00"))
+            index++
+        }
+
+        return backupsList[k]
     }
 
     override fun getAll(): List<Backup> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val backupsList : MutableList<Backup> = arrayListOf()
+        var index = 0
+
+        FileUtils.listFilesAtPath(BACKUP_STORAGE_RELATIVE_PATH)!!.forEach {
+            backupsList.add(Backup(index, it, "00:00:00"))
+            index++
+        }
+
+        return backupsList
     }
 }
