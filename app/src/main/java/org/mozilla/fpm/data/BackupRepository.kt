@@ -6,4 +6,6 @@ package org.mozilla.fpm.data
 
 import org.mozilla.fpm.models.Backup
 
-interface BackupRepository : Repository<Backup, Int>
+interface BackupRepository : Repository<Backup, String> {
+    fun deploy(name: String)
+}

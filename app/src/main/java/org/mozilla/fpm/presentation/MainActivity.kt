@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
         title = getString(R.string.app_name)
         presenter = MainPresenter()
         presenter.attachView(this@MainActivity)

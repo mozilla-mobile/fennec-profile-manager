@@ -7,12 +7,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.mozilla.fpm"
-    android:sharedUserId="org.mozilla.firefox.sharedID"
+    android:sharedUserId="org.mozilla.fennec_andrei.a.lazar.sharedID"
     android:allowBackup="false"
     tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
