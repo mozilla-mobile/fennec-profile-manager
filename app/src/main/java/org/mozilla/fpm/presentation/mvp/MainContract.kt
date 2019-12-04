@@ -33,5 +33,7 @@ interface MainContract {
         fun applyBackup(backupName: String)
 
         fun renameBackup(backupName: String)
+
+        fun deleteBackup(backupName: String)
     }
 }

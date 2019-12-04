@@ -49,6 +49,12 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
+    override fun deleteBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Default) {
+            backupsRepository.remove(backupName)
+        }
+    }
+
     override fun renameBackup(backupName: String) {
         TODO("not implemented")
     }

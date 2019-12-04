@@ -12,7 +12,10 @@
         android:padding="8dp"
         android:layout_margin="16dp"
         android:textSize="14sp"
+        android:inputType="textCapSentences"
         android:imeOptions="actionDone"
+        android:lines="1"
+        android:maxLines="1"
         />
 
 </LinearLayout>

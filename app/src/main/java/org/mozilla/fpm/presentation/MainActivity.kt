@@ -103,8 +103,11 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         showBackupAlert(false, item)
     }
 
-    override fun onDeleteClick(item: Backup) {
-        TODO("not implemented")
+    override fun onDeleteClick(item: Backup, position: Int) {
+        presenter.deleteBackup(item.name)
+        adapter.delete(position)
+
+        if (adapter.itemCount == 0) prompt.visibility = View.VISIBLE
     }
 
     override fun showFirstrun() {
