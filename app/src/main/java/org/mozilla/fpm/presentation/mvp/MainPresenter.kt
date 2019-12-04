@@ -4,8 +4,13 @@
 
 package org.mozilla.fpm.presentation.mvp
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
+import org.mozilla.fpm.models.Backup
 
 class MainPresenter : MainContract.Presenter {
 
@@ -14,15 +19,47 @@ class MainPresenter : MainContract.Presenter {
     private val backupsRepository: BackupRepository = BackupRepositoryImpl
 
     override fun getBackups() {
-        view?.onBackupsLoaded(backupsRepository.getAll())
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            val backups = withContext(Dispatchers.Default) { backupsRepository.getAll() }
+            view?.hideLoading()
+            view?.onBackupsLoaded(backups)
+        }
     }
 
     override fun importBackup() {
         // todo
     }
 
-    override fun createBackup() {
-        // todo
+    override fun applyBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            withContext(Dispatchers.IO) { backupsRepository.deploy(backupName) }
+            view?.hideLoading()
+            view?.onBackupApplied()
+        }
+    }
+
+    override fun createBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            withContext(Dispatchers.IO) { backupsRepository.create(backupName) }
+            val backup = withContext(Dispatchers.Default) { backupsRepository.get("$backupName.zip") }
+            view?.hideLoading()
+            view?.onBackupCreated(backup)
+        }
+    }
+
+    override fun deleteBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Default) {
+            backupsRepository.remove(backupName)
+        }
+    }
+
+    override fun renameBackup(backup: Backup, newBackupName: String) {
+        GlobalScope.launch(Dispatchers.Default) {
+            backupsRepository.update(backup, newBackupName)
+        }
     }
 
     override fun attachView(view: MainContract.View) {

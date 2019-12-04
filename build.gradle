@@ -6,6 +6,7 @@ buildscript {
     ext {
         kotlin_version = "1.3.50"
         materialVersion = "1.0.0"
+        coroutinesVersion = "1.3.2"
     }
 
     repositories {
