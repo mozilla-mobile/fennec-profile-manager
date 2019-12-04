@@ -53,8 +53,7 @@ object BackupRepositoryImpl : BackupRepository {
     }
 
     override fun update(t: Backup, k: String) {
-        File("${getBackupStoragePath()}/${t.name}").delete()
-        // TODO copy data through stream with simple renaming
+        File("${getBackupStoragePath()}/${t.name}").renameTo(File("${getBackupStoragePath()}/$k"))
     }
 
     override fun get(k: String): Backup {
