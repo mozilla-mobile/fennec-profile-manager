@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
+import org.mozilla.fpm.models.Backup
 
 class MainPresenter : MainContract.Presenter {
 
@@ -55,8 +56,10 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
-    override fun renameBackup(backupName: String) {
-        TODO("not implemented")
+    override fun renameBackup(backup: Backup, newBackupName: String) {
+        GlobalScope.launch(Dispatchers.Default) {
+            backupsRepository.update(backup, newBackupName)
+        }
     }
 
     override fun attachView(view: MainContract.View) {

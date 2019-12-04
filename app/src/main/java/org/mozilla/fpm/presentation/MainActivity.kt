@@ -99,8 +99,28 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         TODO("not implemented")
     }
 
-    override fun onEditClick(item: Backup) {
-        showBackupAlert(false, item)
+    @SuppressLint("InflateParams")
+    override fun onEditClick(item: Backup, position: Int) {
+        val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
+        val inflater = layoutInflater
+        builder.setTitle(getString(R.string.edit_backup_name))
+        val dialogLayout = inflater.inflate(R.layout.alert_input, null)
+        val input = dialogLayout.findViewById<EditText>(R.id.input)
+        input.setText(item.name.replace(".zip", ""))
+        builder.setView(dialogLayout)
+        builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
+            run {
+                if (input.text.isEmpty()) {
+                    showMessage(getString(R.string.error_input_null))
+                    return@setPositiveButton
+                }
+
+                presenter.renameBackup(item, input.text.toString())
+                adapter.update(Backup(input.text.toString(), item.createdAt), position)
+            }
+        }
+        builder.setNegativeButton(getString(R.string.cancel), null)
+        builder.show()
     }
 
     override fun onDeleteClick(item: Backup, position: Int) {
@@ -183,31 +203,18 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
+    @SuppressLint("InflateParams")
     fun attemptCreate() {
         if (Utils.makeFirefoxPackageContext(this) == null) {
-            showMessage(getString(R.string.error_shareduserid))
+            showMessage(getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
             return
         }
 
-        showBackupAlert(true)
-    }
-
-    fun showBackupAlert(create: Boolean) {
-        showBackupAlert(create, null)
-    }
-
-    /**
-     * We use this alert dialog for both create and edit actions. If the create
-     * param is false, then we have an edit action.
-     */
-    @SuppressLint("InflateParams")
-    fun showBackupAlert(create: Boolean, backup: Backup?) {
         val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
         val inflater = layoutInflater
         builder.setTitle(getString(R.string.set_backup_name))
         val dialogLayout = inflater.inflate(R.layout.alert_input, null)
         val input = dialogLayout.findViewById<EditText>(R.id.input)
-        if (backup != null) input.setText(backup.name)
         builder.setView(dialogLayout)
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
             run {
@@ -216,11 +223,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
-                if (create) {
-                    presenter.createBackup(input.text.toString())
-                } else {
-                    presenter.renameBackup(input.text.toString())
-                }
+                presenter.createBackup(input.text.toString())
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)

@@ -35,6 +35,11 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         notifyItemRangeChanged(position, dataSource.size)
     }
 
+    fun update(backup: Backup, position: Int) {
+        dataSource[position] = backup
+        notifyItemChanged(position)
+    }
+
     override fun getItemCount(): Int {
         return dataSource.size
     }
@@ -64,7 +69,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
             date.text = backup.createdAt
             apply.setOnClickListener { listener.onApplyClick(backup) }
             share.setOnClickListener { listener.onShareClick(backup) }
-            edit.setOnClickListener { listener.onEditClick(backup) }
+            edit.setOnClickListener { listener.onEditClick(backup, position) }
             delete.setOnClickListener { listener.onDeleteClick(backup, position) }
         }
     }
@@ -76,7 +81,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
     interface MenuListener {
         fun onApplyClick(item: Backup)
         fun onShareClick(item: Backup)
-        fun onEditClick(item: Backup)
+        fun onEditClick(item: Backup, position: Int)
         fun onDeleteClick(item: Backup, position: Int)
     }
 }
