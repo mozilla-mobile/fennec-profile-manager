@@ -32,12 +32,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
         adapter = BackupsRVAdapter()
         backups_rv.layoutManager = LinearLayoutManager(this@MainActivity)
-        backups_rv.addItemDecoration(
-            DividerItemDecoration(
-                this@MainActivity,
-                LinearLayoutManager.VERTICAL
-            )
-        )
+        backups_rv.addItemDecoration(DividerItemDecoration(this@MainActivity, LinearLayoutManager.VERTICAL))
         backups_rv.adapter = adapter
 
         if (PrefsManager.checkFirstRun()) showFirstrun()
@@ -49,8 +44,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onBackupsLoaded(data: List<Backup>) {
-        adapter.updateData(data)
-        adapter.setListener(this@MainActivity)
+        if (data.isEmpty()) prompt.visibility = View.VISIBLE else {
+            adapter.updateData(data)
+            adapter.setListener(this@MainActivity)
+        }
     }
 
     override fun onBackupCreated(backup: Backup) {

@@ -4,6 +4,10 @@
 
 package org.mozilla.fpm.presentation.mvp
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
 
@@ -14,7 +18,10 @@ class MainPresenter : MainContract.Presenter {
     private val backupsRepository: BackupRepository = BackupRepositoryImpl
 
     override fun getBackups() {
-        view?.onBackupsLoaded(backupsRepository.getAll())
+        GlobalScope.launch(Dispatchers.Main) {
+            val backups = withContext(Dispatchers.Default) { backupsRepository.getAll() }
+            view?.onBackupsLoaded(backups)
+        }
     }
 
     override fun importBackup() {
