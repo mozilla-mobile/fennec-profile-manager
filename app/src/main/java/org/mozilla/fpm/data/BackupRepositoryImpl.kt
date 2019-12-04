@@ -27,14 +27,24 @@ object BackupRepositoryImpl : BackupRepository {
             Log.d(javaClass.name, "Repository initialized!")
         }
 
-        val zde = ZipUtils()
-        zde.compress(getBackupDeployPath(), "${getBackupStoragePath()}/$k.zip")
+        val deployPath = getBackupDeployPath()
+
+        if (deployPath != null) {
+            ZipUtils().compress(deployPath, "${getBackupStoragePath()}/$k.zip")
+            return
+        }
+        Log.w(javaClass.name, "No Firefox app installed. Please install one!")
     }
 
     override fun deploy(name: String) {
-        val zde = ZipUtils()
-        File(getBackupDeployPath()).deleteRecursively()
-        zde.extract("${getBackupStoragePath()}/$name")
+        val deployPath = getBackupDeployPath()
+
+        if (deployPath != null) {
+            File(deployPath).deleteRecursively()
+            ZipUtils().extract("${getBackupStoragePath()}/$name")
+            return
+        }
+        Log.w(javaClass.name, "No Firefox app installed. Please install one!")
     }
 
     override fun remove(k: String) {
@@ -47,13 +57,13 @@ object BackupRepositoryImpl : BackupRepository {
     }
 
     override fun get(k: String): Backup {
-        File(getBackupStoragePath()).listFiles()!!.forEach {
+        File(getBackupStoragePath()).listFiles()?.forEach {
             if (it.name == k) {
                 return Backup(it.name, it.lastModified().toString())
             }
         }
 
-        return Backup("NOT_FOUND_ERR", "")
+        throw Exception("No backups with this name were found!")
     }
 
     override fun getAll(): List<Backup> {
@@ -63,7 +73,7 @@ object BackupRepositoryImpl : BackupRepository {
             File(getBackupStoragePath()).mkdirs()
         }
 
-        File(getBackupStoragePath()).listFiles()!!.forEach {
+        File(getBackupStoragePath()).listFiles()?.forEach {
             backupsList.add(Backup(it.name, it.lastModified().toString()))
         }
 
@@ -72,7 +82,10 @@ object BackupRepositoryImpl : BackupRepository {
 
     private fun makeFirefoxPackageContext(context: Context): Context? {
         try {
-            return context.createPackageContext(BuildConfig.FENNEC_PACKAGE_NAME, Context.CONTEXT_RESTRICTED)
+            return context.createPackageContext(
+                BuildConfig.FENNEC_PACKAGE_NAME,
+                Context.CONTEXT_RESTRICTED
+            )
         } catch (e: PackageManager.NameNotFoundException) {
             Log.w(javaClass.name, "No Firefox app installed. Please install one!")
         }
@@ -84,7 +97,7 @@ object BackupRepositoryImpl : BackupRepository {
         return "${ctx.applicationInfo.dataDir}$BACKUP_STORAGE_RELATIVE_PATH"
     }
 
-    private fun getBackupDeployPath(): String {
-        return makeFirefoxPackageContext(ctx)!!.applicationInfo.dataDir
+    private fun getBackupDeployPath(): String? {
+        return makeFirefoxPackageContext(ctx)?.applicationInfo?.dataDir
     }
 }

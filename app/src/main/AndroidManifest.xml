@@ -7,7 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.mozilla.fpm"
-    android:sharedUserId="org.mozilla.fennec_andrei.a.lazar.sharedID"
+    android:sharedUserId="org.mozilla.firefox.sharedID"
     android:allowBackup="false"
     tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
