@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.fpm.R
+import org.mozilla.fpm.data.BackupRepositoryImpl
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+        BackupRepositoryImpl.setContext(applicationContext)
         title = getString(R.string.app_name)
         presenter = MainPresenter()
         presenter.attachView(this@MainActivity)
