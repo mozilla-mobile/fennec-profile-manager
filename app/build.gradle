@@ -14,9 +14,14 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
+        def FENNEC_PACKAGE_NAME = "FENNEC_PACKAGE_NAME"
         release {
+            buildConfigField("String", FENNEC_PACKAGE_NAME, "org.mozilla.firefox")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField("String", FENNEC_PACKAGE_NAME, "org.mozilla.firefox")
         }
     }
 }

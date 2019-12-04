@@ -1,16 +1,20 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.fpm.data
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.utils.ZipUtils
 import java.io.File
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
-    private const val FENNEC_PACKAGE_NAME = "org.mozilla.firefox"
     private const val BACKUP_STORAGE_RELATIVE_PATH = "/backups"
     private lateinit var ctx: Context
 
@@ -39,7 +43,7 @@ object BackupRepositoryImpl : BackupRepository {
 
     override fun update(t: Backup, k: String) {
         File("${getBackupStoragePath()}/${t.name}").delete()
-        //TODO copy data through stream with simple renaming
+        // TODO copy data through stream with simple renaming
     }
 
     override fun get(k: String): Backup {
@@ -68,9 +72,9 @@ object BackupRepositoryImpl : BackupRepository {
 
     private fun makeFirefoxPackageContext(context: Context): Context? {
         try {
-            return context.createPackageContext(FENNEC_PACKAGE_NAME, Context.CONTEXT_RESTRICTED)
+            return context.createPackageContext(BuildConfig.FENNEC_PACKAGE_NAME, Context.CONTEXT_RESTRICTED)
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            Log.w(javaClass.name, "No Firefox app installed. Please install one!")
         }
 
         return null
