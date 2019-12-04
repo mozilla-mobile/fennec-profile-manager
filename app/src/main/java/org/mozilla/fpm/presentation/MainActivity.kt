@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
         presenter.getBackups()
 
-        create_fab.setOnClickListener { presenter.createBackup() }
-        import_fab.setOnClickListener { presenter.importBackup() }
+        create_fab.setOnClickListener { presenter.createBackup().also { hideFirstrun() } }
+        import_fab.setOnClickListener { presenter.importBackup().also { hideFirstrun() } }
     }
 
     override fun onBackupsLoaded(data: List<Backup>) {
