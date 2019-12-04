@@ -85,7 +85,11 @@ object BackupRepositoryImpl : BackupRepository {
      * Debug variants use the external storage in order to allow for better debugging and ease of access to the Backups.
      */
     private fun getBackupStoragePath(): String {
-        return if (BuildConfig.DEBUG) "${ctx.getExternalFilesDir(null)?.absolutePath}$BACKUP_STORAGE_RELATIVE_PATH" else "${ctx.applicationInfo.dataDir}$BACKUP_STORAGE_RELATIVE_PATH"
+        return if (BuildConfig.DEBUG) {
+            "${ctx.getExternalFilesDir(null)?.absolutePath}$BACKUP_STORAGE_RELATIVE_PATH"
+        } else {
+            "${ctx.applicationInfo.dataDir}$BACKUP_STORAGE_RELATIVE_PATH"
+        }
     }
 
     private fun getBackupDeployPath(): String? {

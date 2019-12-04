@@ -57,8 +57,14 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
         getBackups()
 
-        create_fab.setOnClickListener { attemptCreate().also { hideFirstrun() } }
-        import_fab.setOnClickListener { presenter.importBackup().also { hideFirstrun() } }
+        create_fab.setOnClickListener {
+            attemptCreate()
+            hideFirstrun()
+        }
+        import_fab.setOnClickListener {
+            presenter.importBackup()
+            hideFirstrun()
+        }
     }
 
     override fun onBackupsLoaded(data: List<Backup>) {
@@ -76,7 +82,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun onApplyClick(item: Backup) {
         if (Utils.makeFirefoxPackageContext(this) == null) {
-            showMessage(getString(R.string.error_shareduserid))
+            showMessage(getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
             return
         }
 
@@ -129,8 +135,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     /**
-     * In order to allow for easier debugging and ease of access to backup files, debug variants will store the backup archives in
-     * external storage.
+     * In order to allow for easier debugging and ease of access to backup files,
+     * debug variants will store the backup archives inexternal storage.
      */
     fun getBackups() {
         if (!BuildConfig.DEBUG) {
@@ -138,8 +144,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
             return
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE
+            )
             return
         }
 
@@ -155,7 +165,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
             STORAGE_REQUEST_CODE -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showMessage(getString(R.string.storage_permission_denied))
-                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE)
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE
+                    )
                     Log.i(TAG, "Permission has been denied by user")
                 } else {
                     presenter.getBackups()
@@ -180,7 +193,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     /**
-     * We use this alert dialog for both create and edit actions. If the create param is false, then we have an edit action.
+     * We use this alert dialog for both create and edit actions. If the create
+     * param is false, then we have an edit action.
      */
     @SuppressLint("InflateParams")
     fun showBackupAlert(create: Boolean, backup: Backup?) {
@@ -198,7 +212,11 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
-                if (create) presenter.createBackup(input.text.toString()) else presenter.renameBackup(input.text.toString())
+                if (create) {
+                    presenter.createBackup(input.text.toString())
+                } else {
+                    presenter.renameBackup(input.text.toString())
+                }
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)

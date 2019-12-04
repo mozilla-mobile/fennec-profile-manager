@@ -50,7 +50,7 @@ class MainPresenter : MainContract.Presenter {
     }
 
     override fun renameBackup(backupName: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
 
     override fun attachView(view: MainContract.View) {
