@@ -10,12 +10,16 @@ import android.content.pm.PackageManager
 import android.util.Log
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
+import org.mozilla.fpm.utils.CryptUtils
 import org.mozilla.fpm.utils.ZipUtils
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
     private const val BACKUP_STORAGE_RELATIVE_PATH = "/backups"
+    private const val CRYPTO_STORAGE_RELATIVE_PATH = "/crypt"
     private lateinit var ctx: Context
 
     fun setContext(ctx: Context) {
@@ -23,25 +27,39 @@ object BackupRepositoryImpl : BackupRepository {
     }
 
     override fun create(k: String) {
-        if (File(getBackupStoragePath()).mkdirs()) {
+        if (File(getBackupStoragePath()).mkdirs() || File(getCryptedStoragePath()).mkdirs()) {
             Log.d(javaClass.name, "Repository initialized!")
         }
 
         val deployPath = getBackupDeployPath()
 
         if (deployPath != null) {
-            ZipUtils().compress(deployPath, "${getBackupStoragePath()}/$k.zip")
+            ZipUtils().compress(deployPath, "${getBackupStoragePath()}/${k}_arch.zip")
+            CryptUtils.encrypt(
+                FileInputStream("${getBackupStoragePath()}/${k}_arch.zip"),
+                FileOutputStream("${getBackupStoragePath()}/$k.zip")
+            )
+            File("${getBackupStoragePath()}/${k}_arch.zip").delete()
             return
         }
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")
     }
 
     override fun deploy(name: String) {
+        if (File(getBackupStoragePath()).mkdirs() || File(getCryptedStoragePath()).mkdirs()) {
+            Log.d(javaClass.name, "Repository initialized!")
+        }
+
         val deployPath = getBackupDeployPath()
 
         if (deployPath != null) {
             File(deployPath).deleteRecursively()
-            ZipUtils().extract("${getBackupStoragePath()}/$name", getBackupDeployPath())
+            CryptUtils.decrypt(
+                FileInputStream("${getBackupStoragePath()}/$name"),
+                FileOutputStream("${getCryptedStoragePath()}/$name")
+            )
+            ZipUtils().extract("${getCryptedStoragePath()}/$name", getBackupDeployPath())
+            File("${getCryptedStoragePath()}/$name").delete()
             return
         }
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")
@@ -91,6 +109,10 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         return null
+    }
+
+    private fun getCryptedStoragePath(): String {
+        return "${ctx.applicationInfo.dataDir}/$CRYPTO_STORAGE_RELATIVE_PATH"
     }
 
     private fun getBackupStoragePath(): String {

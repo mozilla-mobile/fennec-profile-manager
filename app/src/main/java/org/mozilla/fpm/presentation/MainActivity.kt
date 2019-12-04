@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         backups_rv.adapter = adapter
         presenter.getBackups()
 
-        create_fab.setOnClickListener { presenter.createBackup() }
-        import_fab.setOnClickListener { presenter.importBackup() }
+        create_fab.setOnClickListener { BackupRepositoryImpl.create("archive_1") }
+        import_fab.setOnClickListener { BackupRepositoryImpl.deploy("archive_1.zip") }
     }
 
     override fun onBackupsLoaded(data: List<Backup>) {
