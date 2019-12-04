@@ -63,7 +63,7 @@ object BackupRepositoryImpl : BackupRepository {
             }
         }
 
-        throw Exception("No backups with this name were found!")
+        return Backup("", "")
     }
 
     override fun getAll(): List<Backup> {
