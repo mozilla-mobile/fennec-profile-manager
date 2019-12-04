@@ -29,6 +29,12 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         this.notifyItemInserted(dataSource.size - 1)
     }
 
+    fun delete(position: Int) {
+        dataSource.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, dataSource.size)
+    }
+
     override fun getItemCount(): Int {
         return dataSource.size
     }
@@ -59,7 +65,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
             apply.setOnClickListener { listener.onApplyClick(backup) }
             share.setOnClickListener { listener.onShareClick(backup) }
             edit.setOnClickListener { listener.onEditClick(backup) }
-            delete.setOnClickListener { listener.onDeleteClick(backup) }
+            delete.setOnClickListener { listener.onDeleteClick(backup, position) }
         }
     }
 
@@ -71,6 +77,6 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         fun onApplyClick(item: Backup)
         fun onShareClick(item: Backup)
         fun onEditClick(item: Backup)
-        fun onDeleteClick(item: Backup)
+        fun onDeleteClick(item: Backup, position: Int)
     }
 }

@@ -25,24 +25,28 @@ android {
         dev {
             applicationId "org.mozilla.fpm_debug"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_vlad.baicu"'
-            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_vlad.baicu.sharedID", app_name:"FPM Debug"]
+            resValue "string", "app_name", "FPM Dev"
+            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_vlad.baicu.sharedID"]
         }
 
         nightly {
             applicationId "org.mozilla.fpm_nightly"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_aurora"'
-            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_aurora.sharedID", app_name:"FPM Nightly"]
+            resValue "string", "app_name", "FPM Nightly"
+            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_aurora.sharedID"]
         }
 
         beta {
             applicationId "org.mozilla.fpm_beta"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox_beta"'
+            resValue "string", "app_name", "FPM Beta"
             manifestPlaceholders = [shareduserid: "org.mozilla.firefox_beta.sharedID", app_name:"FPM Beta"]
         }
 
         prod {
             applicationId "org.mozilla.fpm"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox"'
+            resValue "string", "app_name", "FPM"
             manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID", app_name:"FPM"]
         }
     }
