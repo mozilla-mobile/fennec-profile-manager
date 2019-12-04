@@ -41,7 +41,7 @@ object BackupRepositoryImpl : BackupRepository {
 
         if (deployPath != null) {
             File(deployPath).deleteRecursively()
-            ZipUtils().extract("${getBackupStoragePath()}/$name")
+            ZipUtils().extract("${getBackupStoragePath()}/$name", getBackupDeployPath())
             return
         }
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")

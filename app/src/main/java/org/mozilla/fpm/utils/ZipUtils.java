@@ -59,14 +59,12 @@ public class ZipUtils {
         }
     }
 
-    public void extract(String zipFile) throws IOException {
+    public void extract(String zipFile, String destinationDir) throws IOException {
         final int BUFFER = 2048;
         final File file = new File(zipFile);
         final ZipFile zip = new ZipFile(file);
-        final String[] paths = zipFile.split("/");
-        final String newPath = zipFile.substring(0, zipFile.length() - paths[paths.length - 1].length());
 
-        new File(newPath).mkdir();
+        new File(destinationDir).mkdirs();
         Enumeration zipFileEntries = zip.entries();
 
         // Process each entry
@@ -74,7 +72,7 @@ public class ZipUtils {
             // grab a zip file entry
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
             String currentEntry = entry.getName();
-            File destFile = new File(newPath, currentEntry);
+            File destFile = new File(destinationDir, currentEntry);
             //destFile = new File(newPath, destFile.getName());
             File destinationParent = destFile.getParentFile();
 
@@ -86,7 +84,7 @@ public class ZipUtils {
                         .getInputStream(entry));
                 int currentByte;
                 // establish buffer for writing file
-                byte data[] = new byte[BUFFER];
+                byte[] data = new byte[BUFFER];
 
                 // write the current file to disk
                 FileOutputStream fos = new FileOutputStream(destFile);
@@ -100,11 +98,6 @@ public class ZipUtils {
                 dest.flush();
                 dest.close();
                 is.close();
-            }
-
-            if (currentEntry.endsWith(".zip")) {
-                // found a zip file, try to open
-                extract(destFile.getAbsolutePath());
             }
         }
     }
