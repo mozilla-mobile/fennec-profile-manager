@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     override fun onBackupCreated(backup: Backup) {
         prompt.visibility = View.GONE
         adapter.add(backup)
+        adapter.setListener(this@MainActivity)
     }
 
     override fun onApplyClick(item: Backup) {
