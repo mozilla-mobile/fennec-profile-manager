@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         if (PrefsManager.checkFirstRun()) showFirstrun()
 
         getBackups()
-
+      
         create_fab.setOnClickListener {
             attemptCreate()
             hideFirstrun()
