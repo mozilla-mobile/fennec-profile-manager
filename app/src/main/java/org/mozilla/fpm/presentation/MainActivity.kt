@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         BackupRepositoryImpl.setContext(applicationContext)
-        title = getString(R.string.app_name)
+        title = getString(R.string.app_name_full)
         presenter = MainPresenter()
         presenter.attachView(this@MainActivity)
 
