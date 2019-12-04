@@ -5,23 +5,45 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "org.mozilla.fpm"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        flavorDimensions "default"
     }
+
     buildTypes {
-        def FENNEC_PACKAGE_NAME = "FENNEC_PACKAGE_NAME"
         release {
-            buildConfigField("String", FENNEC_PACKAGE_NAME, '"org.mozilla.firefox"')
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
-            buildConfigField("String", FENNEC_PACKAGE_NAME, '"org.mozilla.firefox"')
+    }
+
+    productFlavors {
+        dev {
+            applicationId "org.mozilla.fpm_debug"
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_vlad.baicu"'
+            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_vlad.baicu.sharedID", app_name:"FPM Debug"]
+        }
+
+        nightly {
+            applicationId "org.mozilla.fpm_nightly"
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_aurora"'
+            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_aurora.sharedID", app_name:"FPM Nightly"]
+        }
+
+        beta {
+            applicationId "org.mozilla.fpm_beta"
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox_beta"'
+            manifestPlaceholders = [shareduserid: "org.mozilla.firefox_beta.sharedID", app_name:"FPM Beta"]
+        }
+
+        prod {
+            applicationId "org.mozilla.fpm"
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox"'
+            manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID", app_name:"FPM"]
         }
     }
 }

@@ -12,9 +12,15 @@ interface MainContract {
 
         fun onBackupCreated(backup: Backup)
 
+        fun onBackupApplied()
+
         fun showFirstrun()
 
         fun hideFirstrun()
+
+        fun showLoading()
+
+        fun hideLoading()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -22,6 +28,10 @@ interface MainContract {
 
         fun importBackup()
 
-        fun createBackup()
+        fun createBackup(backupName: String)
+
+        fun applyBackup(backupName: String)
+
+        fun renameBackup(backupName: String)
     }
 }

@@ -15,4 +15,16 @@
     <string name="no_backups_message">No backups are currently available. Please create or import a new backup.</string>
     <string name="import_prompt">Import</string>
     <string name="create_prompt">Create</string>
+    <string name="backup_name">Backup name</string>
+    <string name="set_backup_name">Set backup name</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_input_null">The name cannot be empty, please try again.</string>
+    <string name="storage_permission_denied">Please grant access to the storage permission in order to use this app.</string>
+    <string name="error_shareduserid" formatted="true">The app with the same shared user id %s does not exist, please install it and try again</string>
+    <string name="backup_applied">The backup has been applied successfully, please check the app.</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_message">This will overwrite the entire current state of the app, do you want to proceed?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

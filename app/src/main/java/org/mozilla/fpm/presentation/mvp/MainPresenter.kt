@@ -19,7 +19,9 @@ class MainPresenter : MainContract.Presenter {
 
     override fun getBackups() {
         GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
             val backups = withContext(Dispatchers.Default) { backupsRepository.getAll() }
+            view?.hideLoading()
             view?.onBackupsLoaded(backups)
         }
     }
@@ -28,8 +30,27 @@ class MainPresenter : MainContract.Presenter {
         // todo
     }
 
-    override fun createBackup() {
-        // todo
+    override fun applyBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            withContext(Dispatchers.IO) { backupsRepository.deploy(backupName) }
+            view?.hideLoading()
+            view?.onBackupApplied()
+        }
+    }
+
+    override fun createBackup(backupName: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            withContext(Dispatchers.IO) { backupsRepository.create(backupName) }
+            val backup = withContext(Dispatchers.Default) { backupsRepository.get("$backupName.zip") }
+            view?.hideLoading()
+            view?.onBackupCreated(backup)
+        }
+    }
+
+    override fun renameBackup(backupName: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun attachView(view: MainContract.View) {
