@@ -11,6 +11,10 @@ interface MainContract {
         fun onBackupsLoaded(data: List<Backup>)
 
         fun onBackupCreated(backup: Backup)
+
+        fun showFirstrun()
+
+        fun hideFirstrun()
     }
 
     interface Presenter : BasePresenter<View> {

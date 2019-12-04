@@ -12,4 +12,7 @@
     <string name="apply">Apply</string>
     <string name="share">Share</string>
     <string name="edit">Edit</string>
+    <string name="no_backups_message">No backups are currently available. Please create or import a new backup.</string>
+    <string name="import_prompt">Import</string>
+    <string name="create_prompt">Create</string>
 </resources>

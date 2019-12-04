@@ -5,12 +5,14 @@
 package org.mozilla.fpm.presentation
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.fpm.R
 import org.mozilla.fpm.data.BackupRepositoryImpl
+import org.mozilla.fpm.data.PrefsManager
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
@@ -30,8 +32,16 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
         adapter = BackupsRVAdapter()
         backups_rv.layoutManager = LinearLayoutManager(this@MainActivity)
-        backups_rv.addItemDecoration(DividerItemDecoration(this@MainActivity, LinearLayoutManager.VERTICAL))
+        backups_rv.addItemDecoration(
+            DividerItemDecoration(
+                this@MainActivity,
+                LinearLayoutManager.VERTICAL
+            )
+        )
         backups_rv.adapter = adapter
+
+        if (PrefsManager.checkFirstRun()) showFirstrun()
+
         presenter.getBackups()
 
         create_fab.setOnClickListener { presenter.createBackup() }
@@ -61,6 +71,17 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun onDeleteClick(item: Backup) {
         TODO("not implemented")
+    }
+
+    override fun showFirstrun() {
+        create_label.visibility = View.GONE
+        import_label.visibility = View.VISIBLE
+        PrefsManager.setFirstRunComplete()
+    }
+
+    override fun hideFirstrun() {
+        create_label.visibility = View.GONE
+        import_label.visibility = View.GONE
     }
 
     override fun onDestroy() {
