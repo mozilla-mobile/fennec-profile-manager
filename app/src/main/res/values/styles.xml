@@ -19,4 +19,9 @@
     <style name="AppTheme.PopupOverlay"
            parent="Theme.MaterialComponents.Light.NoActionBar" />
 
+    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryDark</item>
+
+    </style>
+
 </resources>

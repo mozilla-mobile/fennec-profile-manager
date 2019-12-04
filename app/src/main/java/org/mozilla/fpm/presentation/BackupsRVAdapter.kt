@@ -54,7 +54,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
 
         fun bind(position: Int) {
             val backup: Backup = dataSource[position]
-            title.text = backup.name
+            title.text = backup.name.replace(".zip", "")
             date.text = backup.createdAt
             apply.setOnClickListener { listener.onApplyClick(backup) }
             share.setOnClickListener { listener.onShareClick(backup) }
