@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import org.mozilla.fpm.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -16,6 +17,13 @@ class Utils {
 
     companion object {
         private val TAG = Utils::class.java.canonicalName
+        private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
+        private const val CREATE_STORAGE_REQUEST_CODE = 1002
+        private const val IMPORT_STORAGE_REQUEST_CODE = 1003
+
+        fun showMessage(context:Context, message: String) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
 
         fun makeFirefoxPackageContext(context: Context): Context? {
             try {

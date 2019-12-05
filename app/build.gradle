@@ -40,14 +40,14 @@ android {
             applicationId "org.mozilla.fpm_beta"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox_beta"'
             resValue "string", "app_name", "FPM Beta"
-            manifestPlaceholders = [shareduserid: "org.mozilla.firefox_beta.sharedID", app_name:"FPM Beta"]
+            manifestPlaceholders = [shareduserid: "org.mozilla.firefox_beta.sharedID"]
         }
 
         prod {
             applicationId "org.mozilla.fpm"
             buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox"'
             resValue "string", "app_name", "FPM"
-            manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID", app_name:"FPM"]
+            manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID"]
         }
     }
 }

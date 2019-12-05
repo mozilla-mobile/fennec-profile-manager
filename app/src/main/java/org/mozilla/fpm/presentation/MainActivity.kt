@@ -4,19 +4,13 @@
 
 package org.mozilla.fpm.presentation
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,7 +21,10 @@ import org.mozilla.fpm.data.PrefsManager
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
-import org.mozilla.fpm.utils.Utils
+import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
+import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
+import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
+import org.mozilla.fpm.utils.Utils.Companion.showMessage
 
 class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.MenuListener {
     private lateinit var presenter: MainPresenter
@@ -43,10 +40,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         presenter.attachView(this@MainActivity)
 
         adapter = BackupsRVAdapter()
-        backups_rv.layoutManager = LinearLayoutManager(this@MainActivity)
+        backups_rv.layoutManager = LinearLayoutManager(this)
         backups_rv.addItemDecoration(
             DividerItemDecoration(
-                this@MainActivity,
+                this,
                 LinearLayoutManager.VERTICAL
             )
         )
@@ -55,15 +52,17 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
         if (PrefsManager.checkFirstRun()) showFirstrun()
 
-        getBackups()
-      
+        if (checkStoragePermission(this, BACKUPS_STORAGE_REQUEST_CODE)) presenter.getBackups()
+
         create_fab.setOnClickListener {
             attemptCreate()
             hideFirstrun()
         }
         import_fab.setOnClickListener {
-            presenter.importBackup()
-            hideFirstrun()
+            if (checkStoragePermission(this, IMPORT_STORAGE_REQUEST_CODE)) {
+                presenter.importBackup()
+                hideFirstrun()
+            }
         }
     }
 
@@ -82,8 +81,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onApplyClick(item: Backup) {
-        if (Utils.makeFirefoxPackageContext(this) == null) {
-            showMessage(getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+        if (makeFirefoxPackageContext(this) == null) {
+            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
             return
         }
 
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
             run {
                 if (input.text.isEmpty()) {
-                    showMessage(getString(R.string.error_input_null))
+                    showMessage(this@MainActivity, getString(R.string.error_input_null))
                     return@setPositiveButton
                 }
 
@@ -150,34 +149,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onBackupApplied() {
-        showMessage(getString(R.string.backup_applied))
+        showMessage(this, getString(R.string.backup_applied))
     }
 
     override fun onDestroy() {
         super.onDestroy()
         presenter.detachView()
-    }
-
-    /**
-     * In order to allow for easier debugging and ease of access to backup files,
-     * debug variants will store the backup archives inexternal storage.
-     */
-    fun getBackups() {
-        if (!BuildConfig.DEBUG) {
-            presenter.getBackups()
-            return
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE
-            )
-            return
-        }
-
-        presenter.getBackups()
     }
 
     override fun onRequestPermissionsResult(
@@ -186,18 +163,31 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         grantResults: IntArray
     ) {
         when (requestCode) {
-            STORAGE_REQUEST_CODE -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    showMessage(getString(R.string.storage_permission_denied))
-                    ActivityCompat.requestPermissions(
+            BACKUPS_STORAGE_REQUEST_CODE -> {
+                if (validateStoragePermissionOrShowRationale(
                         this,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_REQUEST_CODE
+                        permissions,
+                        grantResults
                     )
-                    Log.i(TAG, "Permission has been denied by user")
-                } else {
-                    presenter.getBackups()
-                    Log.i(TAG, "Permission has been granted by user")
-                }
+                ) presenter.getBackups()
+            }
+
+            CREATE_STORAGE_REQUEST_CODE -> {
+                if (validateStoragePermissionOrShowRationale(
+                        this,
+                        permissions,
+                        grantResults
+                    )
+                ) attemptCreate()
+            }
+
+            IMPORT_STORAGE_REQUEST_CODE -> {
+                if (validateStoragePermissionOrShowRationale(
+                        this,
+                        permissions,
+                        grantResults
+                    )
+                ) presenter.importBackup()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -205,10 +195,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     @SuppressLint("InflateParams")
     fun attemptCreate() {
-        if (Utils.makeFirefoxPackageContext(this) == null) {
-            showMessage(getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+        if (makeFirefoxPackageContext(this) == null) {
+            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
             return
         }
+
+        if (!checkStoragePermission(this, CREATE_STORAGE_REQUEST_CODE)) return
 
         val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
         val inflater = layoutInflater
@@ -219,7 +211,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
             run {
                 if (input.text.isEmpty()) {
-                    showMessage(getString(R.string.error_input_null))
+                    showMessage(this@MainActivity, getString(R.string.error_input_null))
                     return@setPositiveButton
                 }
 
@@ -230,12 +222,9 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.show()
     }
 
-    fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
     companion object {
-        private val TAG = MainActivity::class.java.canonicalName
-        private const val STORAGE_REQUEST_CODE = 100
+        private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
+        private const val CREATE_STORAGE_REQUEST_CODE = 1002
+        private const val IMPORT_STORAGE_REQUEST_CODE = 1003
     }
 }
