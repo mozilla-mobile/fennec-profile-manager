@@ -21,7 +21,7 @@ class Utils {
         private const val CREATE_STORAGE_REQUEST_CODE = 1002
         private const val IMPORT_STORAGE_REQUEST_CODE = 1003
 
-        fun showMessage(context:Context, message: String) {
+        fun showMessage(context: Context, message: String) {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
 

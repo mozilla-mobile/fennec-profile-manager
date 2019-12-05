@@ -74,17 +74,17 @@ class PermissionUtils {
                 var somePermissionsForeverDenied = false
                 for (permission in permissions) {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                        //denied
+                        // denied
                         Log.i(TAG, "Permission denied")
                     } else {
                         if (ActivityCompat.checkSelfPermission(
                                 activity, permission
                             ) == PackageManager.PERMISSION_GRANTED
                         ) {
-                            //allowed
+                            // allowed
                             Log.i(TAG, "Permission allowed")
                         } else {
-                            //set to never ask again
+                            // set to never ask again
                             Log.e(TAG, "Permision set to never ask again")
                             somePermissionsForeverDenied = true
                         }
