@@ -16,7 +16,8 @@
         android:imeOptions="actionDone"
         android:lines="1"
         android:maxLines="1"
-        android:textCursorDrawable="@color/colorPrimaryDark"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
         />
 
 </LinearLayout>
