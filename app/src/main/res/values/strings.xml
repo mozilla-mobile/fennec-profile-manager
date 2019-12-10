@@ -18,6 +18,8 @@
     <string name="backup_name">Backup name</string>
     <string name="set_backup_name">Set backup name</string>
     <string name="edit_backup_name">Edit backup name</string>
+    <string name="delete_backup">Delete backup</string>
+    <string name="delete_backup_message">Are you sure you want to delete this backup?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="error_input_null">The name cannot be empty, please try again.</string>
