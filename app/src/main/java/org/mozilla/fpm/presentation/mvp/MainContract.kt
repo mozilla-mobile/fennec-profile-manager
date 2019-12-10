@@ -5,12 +5,15 @@
 package org.mozilla.fpm.presentation.mvp
 
 import org.mozilla.fpm.models.Backup
+import java.io.File
 
 interface MainContract {
     interface View {
         fun onBackupsLoaded(data: List<Backup>)
 
         fun onBackupCreated(backup: Backup)
+
+        fun onBackupImported(backup: Backup)
 
         fun onBackupApplied()
 
@@ -26,7 +29,7 @@ interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun getBackups()
 
-        fun importBackup()
+        fun importBackup(backupFile: File, fileName: String?)
 
         fun createBackup(backupName: String)
 

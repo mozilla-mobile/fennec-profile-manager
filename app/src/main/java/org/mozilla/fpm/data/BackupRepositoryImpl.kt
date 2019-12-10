@@ -17,6 +17,8 @@ import org.mozilla.fpm.utils.ZipUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.channels.FileChannel
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
@@ -43,6 +45,27 @@ object BackupRepositoryImpl : BackupRepository {
             return
         }
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")
+    }
+
+    override fun import(backupFile: File, fileName: String?) {
+        if (File(getBackupStoragePath(ctx)).mkdirs() || File(getCryptedStoragePath(ctx)).mkdirs()) {
+            Log.d(javaClass.name, "Repository initialized!")
+        }
+
+        val copy =  File("${getBackupStoragePath(ctx)}/${fileName}")
+
+        val input: FileChannel = FileInputStream(backupFile).channel
+        val output: FileChannel = FileOutputStream(copy).channel
+
+        try {
+            input.transferTo(0, input.size(), output)
+        } catch(io: IOException){
+            // post to log
+            Log.e(javaClass.name, io.toString())
+        } finally {
+            input.close()
+            output.close()
+        }
     }
 
     override fun deploy(name: String) {

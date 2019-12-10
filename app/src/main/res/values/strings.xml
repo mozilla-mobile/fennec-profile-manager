@@ -28,6 +28,7 @@
     <string name="backup_applied">The backup has been applied successfully, please check the app.</string>
     <string name="warning_title">Warning</string>
     <string name="warning_message">This will overwrite the entire current state of the app, do you want to proceed?</string>
+    <string name="generic_error_message">Something went wrong, please try again later.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>

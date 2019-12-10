@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
 import org.mozilla.fpm.models.Backup
+import java.io.File
 
 class MainPresenter : MainContract.Presenter {
 
@@ -27,8 +28,14 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
-    override fun importBackup() {
-        // todo
+    override fun importBackup(backupFile: File, fileName: String?) {
+        GlobalScope.launch(Dispatchers.Main) {
+            view?.showLoading()
+            withContext(Dispatchers.IO) { backupsRepository.import(backupFile, fileName) }
+            val importedBackup = withContext(Dispatchers.Default) { backupsRepository.get(backupFile.name) }
+            view?.hideLoading()
+            view?.onBackupImported(importedBackup)
+        }
     }
 
     override fun applyBackup(backupName: String) {

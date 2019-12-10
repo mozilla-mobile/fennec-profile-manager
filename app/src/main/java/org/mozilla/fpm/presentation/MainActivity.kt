@@ -6,7 +6,10 @@ package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.EditText
@@ -64,8 +67,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         }
         import_fab.setOnClickListener {
             if (checkStoragePermission(this, IMPORT_STORAGE_REQUEST_CODE)) {
-                presenter.importBackup()
                 hideFirstrun()
+                launchFilePicker()
             }
         }
     }
@@ -79,6 +82,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onBackupCreated(backup: Backup) {
+        prompt.visibility = View.GONE
+        adapter.add(backup)
+        adapter.setListener(this@MainActivity)
+    }
+
+    override fun onBackupImported(backup: Backup) {
         prompt.visibility = View.GONE
         adapter.add(backup)
         adapter.setListener(this@MainActivity)
@@ -197,7 +206,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                         permissions,
                         grantResults
                     )
-                ) presenter.importBackup()
+                ) launchFilePicker()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -232,9 +241,36 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.show()
     }
 
+    fun launchFilePicker() {
+        var pickItnt = Intent(Intent.ACTION_GET_CONTENT)
+        pickItnt.type = "application/zip"
+        pickItnt = Intent.createChooser(pickItnt, "Choose a file")
+        startActivityForResult(pickItnt, PICKFILE_RESULT_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            PICKFILE_RESULT_CODE -> {
+                val fileUri: Uri? = data?.data
+                val source: String? = fileUri?.path
+                if (!TextUtils.isEmpty(source)) {
+                    presenter.importBackup(File(source!!), fileUri.lastPathSegment)
+                } else {
+                    showMessage(this@MainActivity, getString(R.string.generic_error_message))
+                    Log.e(TAG, "The source uri for the imported file is null or empty.")
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     companion object {
+        private val TAG = MainActivity::class.java.canonicalName
+
         private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
         private const val CREATE_STORAGE_REQUEST_CODE = 1002
         private const val IMPORT_STORAGE_REQUEST_CODE = 1003
+        private const val PICKFILE_RESULT_CODE = 2001
     }
 }
