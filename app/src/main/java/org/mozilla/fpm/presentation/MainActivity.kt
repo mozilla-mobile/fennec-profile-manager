@@ -5,12 +5,14 @@
 package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,8 +25,10 @@ import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
 import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
+import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.Utils.Companion.showMessage
+import java.io.File
 
 class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.MenuListener {
     private lateinit var presenter: MainPresenter
@@ -95,7 +99,13 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onShareClick(item: Backup) {
-        TODO("not implemented")
+        val shareItnt = Intent(Intent.ACTION_SEND)
+        shareItnt.type = "application/zip"
+        shareItnt.putExtra(Intent.EXTRA_STREAM,
+            FileProvider.getUriForFile(this, this.applicationContext.packageName + ".provider",
+                File("${getBackupStoragePath(this)}/${item.name}")))
+        shareItnt.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(shareItnt)
     }
 
     @SuppressLint("InflateParams")
