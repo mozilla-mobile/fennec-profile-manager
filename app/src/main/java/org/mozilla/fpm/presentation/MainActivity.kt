@@ -5,6 +5,8 @@
 package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -105,7 +107,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
         builder.setTitle(getString(R.string.warning_title))
         builder.setMessage(getString(R.string.warning_message))
-        builder.setPositiveButton(getString(R.string.yes)) { _, _ -> presenter.applyBackup(item.name) }
+        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+            with(applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager) {
+                killBackgroundProcesses(BuildConfig.FIREFOX_PACKAGE_NAME)
+            }
+            presenter.applyBackup(item.name)
+        }
         builder.setNegativeButton(getString(R.string.no), null)
         builder.show()
     }
