@@ -23,6 +23,7 @@ import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
+    private const val KILOBYTE: Long = 1024
     private lateinit var ctx: Context
 
     fun setContext(ctx: Context) {
@@ -90,11 +91,11 @@ object BackupRepositoryImpl : BackupRepository {
     override fun get(k: String): Backup {
         File(getBackupStoragePath(ctx)).listFiles()?.forEach {
             if (it.name == k) {
-                return Backup(it.name, Utils.getFormattedDate(it.lastModified()))
+                return Backup(it.name, Utils.getFormattedDate(it.lastModified()), it.length() / KILOBYTE)
             }
         }
 
-        return Backup("", "")
+        return Backup("", "", 0)
     }
 
     override fun getAll(): List<Backup> {
@@ -105,7 +106,7 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         File(getBackupStoragePath(ctx)).listFiles()?.forEach {
-            backupsList.add(Backup(it.name, Utils.getFormattedDate(it.lastModified())))
+            backupsList.add(Backup(it.name, Utils.getFormattedDate(it.lastModified()), it.length() / KILOBYTE))
         }
 
         return backupsList
