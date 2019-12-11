@@ -4,10 +4,6 @@
 
 package org.mozilla.fpm.data
 
-import android.net.Uri
-import org.mozilla.fpm.models.Backup
+import androidx.core.content.FileProvider
 
-interface BackupRepository : Repository<Backup, String> {
-    fun import(fileUri: Uri, fileName: String)
-    fun deploy(name: String)
-}
+class GenericFileProvider : FileProvider()

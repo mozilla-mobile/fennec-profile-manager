@@ -4,6 +4,7 @@
 
 package org.mozilla.fpm.presentation.mvp
 
+import android.net.Uri
 import org.mozilla.fpm.models.Backup
 
 interface MainContract {
@@ -11,6 +12,8 @@ interface MainContract {
         fun onBackupsLoaded(data: List<Backup>)
 
         fun onBackupCreated(backup: Backup)
+
+        fun onBackupImported(backup: Backup)
 
         fun onBackupApplied()
 
@@ -26,7 +29,7 @@ interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun getBackups()
 
-        fun importBackup()
+        fun importBackup(fileUri: Uri, fileName: String)
 
         fun createBackup(backupName: String)
 

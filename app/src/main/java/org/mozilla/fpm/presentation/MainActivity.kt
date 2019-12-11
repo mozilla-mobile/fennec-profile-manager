@@ -5,12 +5,16 @@
 package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
@@ -23,8 +27,11 @@ import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
 import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
+import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
+import org.mozilla.fpm.utils.Utils.Companion.getFileNameFromUri
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.Utils.Companion.showMessage
+import java.io.File
 
 class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.MenuListener {
     private lateinit var presenter: MainPresenter
@@ -60,8 +67,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         }
         import_fab.setOnClickListener {
             if (checkStoragePermission(this, IMPORT_STORAGE_REQUEST_CODE)) {
-                presenter.importBackup()
                 hideFirstrun()
+                launchFilePicker()
             }
         }
     }
@@ -80,9 +87,18 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         adapter.setListener(this@MainActivity)
     }
 
+    override fun onBackupImported(backup: Backup) {
+        prompt.visibility = View.GONE
+        adapter.add(backup)
+        adapter.setListener(this@MainActivity)
+    }
+
     override fun onApplyClick(item: Backup) {
         if (makeFirefoxPackageContext(this) == null) {
-            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+            showMessage(
+                this,
+                getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME)
+            )
             return
         }
 
@@ -95,7 +111,17 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onShareClick(item: Backup) {
-        TODO("not implemented")
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "application/zip"
+        shareIntent.putExtra(
+            Intent.EXTRA_STREAM,
+            FileProvider.getUriForFile(
+                this, this.applicationContext.packageName + ".provider",
+                File("${getBackupStoragePath(this)}/${item.name}")
+            )
+        )
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(shareIntent)
     }
 
     @SuppressLint("InflateParams")
@@ -196,7 +222,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                         permissions,
                         grantResults
                     )
-                ) presenter.importBackup()
+                ) launchFilePicker()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -205,7 +231,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     @SuppressLint("InflateParams")
     fun attemptCreate() {
         if (makeFirefoxPackageContext(this) == null) {
-            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+            showMessage(
+                this,
+                getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME)
+            )
             return
         }
 
@@ -231,9 +260,36 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.show()
     }
 
+    fun launchFilePicker() {
+        var pickItnt = Intent(Intent.ACTION_GET_CONTENT)
+        pickItnt.type = "application/zip"
+        pickItnt = Intent.createChooser(pickItnt, getString(R.string.choose_backup))
+        startActivityForResult(pickItnt, PICKFILE_RESULT_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            PICKFILE_RESULT_CODE -> {
+                val fileUri: Uri? = data?.data
+                val fileName: String? = getFileNameFromUri(this@MainActivity, fileUri)
+                if (fileUri != null && !fileName.isNullOrEmpty()) {
+                    presenter.importBackup(fileUri, fileName)
+                } else {
+                    showMessage(this@MainActivity, getString(R.string.generic_error_message))
+                    Log.e(TAG, fileUri.toString())
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     companion object {
+        private val TAG = MainActivity::class.java.canonicalName
+
         private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
         private const val CREATE_STORAGE_REQUEST_CODE = 1002
         private const val IMPORT_STORAGE_REQUEST_CODE = 1003
+        private const val PICKFILE_RESULT_CODE = 2001
     }
 }
