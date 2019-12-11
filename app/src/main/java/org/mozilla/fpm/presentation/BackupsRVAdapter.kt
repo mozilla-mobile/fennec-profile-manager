@@ -57,6 +57,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
     inner class BackupViewHolder(@NonNull itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.title)
+        private val size: TextView = itemView.findViewById(R.id.size)
         private val date: TextView = itemView.findViewById(R.id.date)
         private val apply: ConstraintLayout = itemView.findViewById(R.id.apply_container)
         private val share: ConstraintLayout = itemView.findViewById(R.id.share_container)
@@ -67,6 +68,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
             val backup: Backup = dataSource[position]
             title.text = backup.name.replace(".zip", "")
             date.text = backup.createdAt
+            size.text = String.format(itemView.resources.getString(R.string.file_size), backup.size)
             apply.setOnClickListener { listener.onApplyClick(backup) }
             share.setOnClickListener { listener.onShareClick(backup) }
             edit.setOnClickListener { listener.onEditClick(backup, position) }

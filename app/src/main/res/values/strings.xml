@@ -34,4 +34,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="choose_backup">Choose backup archive</string>
+    <string name="file_size">%s KBs</string>
 </resources>
