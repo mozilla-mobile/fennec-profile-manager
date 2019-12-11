@@ -7,11 +7,15 @@ package org.mozilla.fpm.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import android.widget.Toast
 import org.mozilla.fpm.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Date
+
+
 
 class Utils {
 
@@ -58,6 +62,26 @@ class Utils {
             } else {
                 "${ctx.applicationInfo.dataDir}$BACKUP_STORAGE_RELATIVE_PATH"
             }
+        }
+
+        fun getFileNameFromUri(context: Context, uri: Uri?): String? {
+            var result: String? = null
+            if (uri != null && uri.scheme.equals("content")) {
+                val cursor = context.contentResolver.query(uri, null, null, null, null)
+                cursor.use {
+                    if (it != null && it.moveToFirst()) {
+                        result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    }
+                }
+            }
+            if (result.isNullOrEmpty()) {
+                result = uri?.path
+                val cut = result?.lastIndexOf('/')
+                if (cut != -1) {
+                    result = cut?.plus(1)?.let { result?.substring(it) }
+                }
+            }
+            return result
         }
     }
 }

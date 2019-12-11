@@ -4,8 +4,8 @@
 
 package org.mozilla.fpm.presentation.mvp
 
+import android.net.Uri
 import org.mozilla.fpm.models.Backup
-import java.io.File
 
 interface MainContract {
     interface View {
@@ -29,7 +29,7 @@ interface MainContract {
     interface Presenter : BasePresenter<View> {
         fun getBackups()
 
-        fun importBackup(backupFile: File, fileName: String?)
+        fun importBackup(fileUri: Uri, fileName: String)
 
         fun createBackup(backupName: String)
 

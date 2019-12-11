@@ -4,10 +4,10 @@
 
 package org.mozilla.fpm.data
 
+import android.net.Uri
 import org.mozilla.fpm.models.Backup
-import java.io.File
 
 interface BackupRepository : Repository<Backup, String> {
-    fun import(backupFile: File, fileName: String?)
+    fun import(fileUri: Uri, fileName: String)
     fun deploy(name: String)
 }

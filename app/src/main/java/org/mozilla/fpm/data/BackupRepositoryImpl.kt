@@ -6,6 +6,7 @@ package org.mozilla.fpm.data
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.utils.CryptUtils
@@ -17,8 +18,8 @@ import org.mozilla.fpm.utils.ZipUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
-import java.nio.channels.FileChannel
+import java.io.InputStream
+import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
@@ -47,25 +48,15 @@ object BackupRepositoryImpl : BackupRepository {
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")
     }
 
-    override fun import(backupFile: File, fileName: String?) {
+    override fun import(fileUri: Uri, fileName: String) {
         if (File(getBackupStoragePath(ctx)).mkdirs() || File(getCryptedStoragePath(ctx)).mkdirs()) {
             Log.d(javaClass.name, "Repository initialized!")
         }
 
-        val copy =  File("${getBackupStoragePath(ctx)}/${fileName}")
-
-        val input: FileChannel = FileInputStream(backupFile).channel
-        val output: FileChannel = FileOutputStream(copy).channel
-
-        try {
-            input.transferTo(0, input.size(), output)
-        } catch(io: IOException){
-            // post to log
-            Log.e(javaClass.name, io.toString())
-        } finally {
-            input.close()
-            output.close()
-        }
+        val inputStream: InputStream? = ctx.contentResolver.openInputStream(fileUri)
+        val copy = File("${getBackupStoragePath(ctx)}/${fileName}")
+        val outputStream: OutputStream = FileOutputStream(copy)
+        inputStream?.copyTo(outputStream, DEFAULT_BUFFER_SIZE)
     }
 
     override fun deploy(name: String) {

@@ -4,6 +4,7 @@
 
 package org.mozilla.fpm.presentation.mvp
 
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -11,7 +12,6 @@ import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
 import org.mozilla.fpm.models.Backup
-import java.io.File
 
 class MainPresenter : MainContract.Presenter {
 
@@ -28,11 +28,11 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
-    override fun importBackup(backupFile: File, fileName: String?) {
+    override fun importBackup(fileUri: Uri, fileName: String) {
         GlobalScope.launch(Dispatchers.Main) {
             view?.showLoading()
-            withContext(Dispatchers.IO) { backupsRepository.import(backupFile, fileName) }
-            val importedBackup = withContext(Dispatchers.Default) { backupsRepository.get(backupFile.name) }
+            withContext(Dispatchers.IO) { backupsRepository.import(fileUri, fileName) }
+            val importedBackup = withContext(Dispatchers.Default) { backupsRepository.get(fileName) }
             view?.hideLoading()
             view?.onBackupImported(importedBackup)
         }

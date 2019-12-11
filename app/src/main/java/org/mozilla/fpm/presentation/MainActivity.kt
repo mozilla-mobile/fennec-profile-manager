@@ -8,7 +8,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -29,6 +28,7 @@ import org.mozilla.fpm.presentation.mvp.MainPresenter
 import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
 import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
 import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
+import org.mozilla.fpm.utils.Utils.Companion.getFileNameFromUri
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.Utils.Companion.showMessage
 import java.io.File
@@ -95,7 +95,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun onApplyClick(item: Backup) {
         if (makeFirefoxPackageContext(this) == null) {
-            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+            showMessage(
+                this,
+                getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME)
+            )
             return
         }
 
@@ -110,9 +113,13 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     override fun onShareClick(item: Backup) {
         val shareItnt = Intent(Intent.ACTION_SEND)
         shareItnt.type = "application/zip"
-        shareItnt.putExtra(Intent.EXTRA_STREAM,
-            FileProvider.getUriForFile(this, this.applicationContext.packageName + ".provider",
-                File("${getBackupStoragePath(this)}/${item.name}")))
+        shareItnt.putExtra(
+            Intent.EXTRA_STREAM,
+            FileProvider.getUriForFile(
+                this, this.applicationContext.packageName + ".provider",
+                File("${getBackupStoragePath(this)}/${item.name}")
+            )
+        )
         shareItnt.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivity(shareItnt)
     }
@@ -215,7 +222,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     @SuppressLint("InflateParams")
     fun attemptCreate() {
         if (makeFirefoxPackageContext(this) == null) {
-            showMessage(this, getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME))
+            showMessage(
+                this,
+                getString(R.string.error_shareduserid, BuildConfig.FIREFOX_PACKAGE_NAME)
+            )
             return
         }
 
@@ -244,7 +254,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     fun launchFilePicker() {
         var pickItnt = Intent(Intent.ACTION_GET_CONTENT)
         pickItnt.type = "application/zip"
-        pickItnt = Intent.createChooser(pickItnt, "Choose a file")
+        pickItnt = Intent.createChooser(pickItnt, getString(R.string.choose_backup))
         startActivityForResult(pickItnt, PICKFILE_RESULT_CODE)
     }
 
@@ -252,12 +262,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         when (requestCode) {
             PICKFILE_RESULT_CODE -> {
                 val fileUri: Uri? = data?.data
-                val source: String? = fileUri?.path
-                if (!TextUtils.isEmpty(source)) {
-                    presenter.importBackup(File(source!!), fileUri.lastPathSegment)
+                val fileName: String? = getFileNameFromUri(this@MainActivity, fileUri)
+                if (fileUri != null && !fileName.isNullOrEmpty()) {
+                    presenter.importBackup(fileUri, fileName)
                 } else {
                     showMessage(this@MainActivity, getString(R.string.generic_error_message))
-                    Log.e(TAG, "The source uri for the imported file is null or empty.")
+                    Log.e(TAG, fileUri.toString())
                 }
             }
         }
