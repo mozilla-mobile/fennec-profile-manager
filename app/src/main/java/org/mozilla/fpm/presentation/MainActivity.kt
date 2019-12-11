@@ -111,17 +111,17 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onShareClick(item: Backup) {
-        val shareItnt = Intent(Intent.ACTION_SEND)
-        shareItnt.type = "application/zip"
-        shareItnt.putExtra(
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "application/zip"
+        shareIntent.putExtra(
             Intent.EXTRA_STREAM,
             FileProvider.getUriForFile(
                 this, this.applicationContext.packageName + ".provider",
                 File("${getBackupStoragePath(this)}/${item.name}")
             )
         )
-        shareItnt.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(shareItnt)
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(shareIntent)
     }
 
     @SuppressLint("InflateParams")

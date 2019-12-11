@@ -63,23 +63,23 @@ class Utils {
         }
 
         fun getFileNameFromUri(context: Context, uri: Uri?): String? {
-            var result: String? = null
+            var fileName: String? = null
             if (uri != null && uri.scheme.equals("content")) {
                 val cursor = context.contentResolver.query(uri, null, null, null, null)
                 cursor.use {
                     if (it != null && it.moveToFirst()) {
-                        result = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                        fileName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                     }
                 }
             }
-            if (result.isNullOrEmpty()) {
-                result = uri?.path
-                val cut = result?.lastIndexOf('/')
+            if (fileName.isNullOrEmpty()) {
+                fileName = uri?.path
+                val cut = fileName?.lastIndexOf('/')
                 if (cut != -1) {
-                    result = cut?.plus(1)?.let { result?.substring(it) }
+                    fileName = cut?.plus(1)?.let { fileName?.substring(it) }
                 }
             }
-            return result
+            return fileName
         }
     }
 }
