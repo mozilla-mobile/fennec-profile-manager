@@ -54,7 +54,7 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         val inputStream: InputStream? = ctx.contentResolver.openInputStream(fileUri)
-        val copy = File("${getBackupStoragePath(ctx)}/${fileName}")
+        val copy = File("${getBackupStoragePath(ctx)}/$fileName")
         val outputStream: OutputStream = FileOutputStream(copy)
         inputStream?.copyTo(outputStream, DEFAULT_BUFFER_SIZE)
     }

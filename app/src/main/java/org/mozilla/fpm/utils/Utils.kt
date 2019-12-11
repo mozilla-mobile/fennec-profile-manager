@@ -15,8 +15,6 @@ import org.mozilla.fpm.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
-
 class Utils {
 
     companion object {
