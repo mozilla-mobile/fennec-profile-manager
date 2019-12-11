@@ -123,10 +123,19 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun onDeleteClick(item: Backup, position: Int) {
-        presenter.deleteBackup(item.name)
-        adapter.delete(position)
+        val builder = AlertDialog.Builder(ContextThemeWrapper(this, R.style.AlertDialogTheme))
+        builder.setTitle(getString(R.string.delete_backup))
+        builder.setMessage(getString(R.string.delete_backup_message))
+        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+            run {
+                presenter.deleteBackup(item.name)
+                adapter.delete(position)
 
-        if (adapter.itemCount == 0) prompt.visibility = View.VISIBLE
+                if (adapter.itemCount == 0) prompt.visibility = View.VISIBLE
+            }
+        }
+        builder.setNegativeButton(getString(R.string.no), null)
+        builder.show()
     }
 
     override fun showFirstrun() {
