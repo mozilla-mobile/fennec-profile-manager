@@ -5,6 +5,7 @@
 package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -268,22 +269,24 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     fun launchFilePicker() {
-        var pickItnt = Intent(Intent.ACTION_GET_CONTENT)
-        pickItnt.type = "application/zip"
-        pickItnt = Intent.createChooser(pickItnt, getString(R.string.choose_backup))
-        startActivityForResult(pickItnt, PICKFILE_RESULT_CODE)
+        var pickIntent = Intent(Intent.ACTION_GET_CONTENT)
+        pickIntent.type = "application/zip"
+        pickIntent = Intent.createChooser(pickIntent, getString(R.string.choose_backup))
+        startActivityForResult(pickIntent, PICK_BACKUP_RESULT_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            PICKFILE_RESULT_CODE -> {
-                val fileUri: Uri? = data?.data
-                val fileName: String? = getFileNameFromUri(this@MainActivity, fileUri)
-                if (fileUri != null && !fileName.isNullOrEmpty()) {
-                    presenter.importBackup(fileUri, fileName)
-                } else {
-                    showMessage(this@MainActivity, getString(R.string.generic_error_message))
-                    Log.e(TAG, fileUri.toString())
+            PICK_BACKUP_RESULT_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val fileUri: Uri? = data?.data
+                    val fileName: String? = getFileNameFromUri(this@MainActivity, fileUri)
+                    if (fileUri != null && !fileName.isNullOrEmpty()) {
+                        presenter.importBackup(fileUri, fileName)
+                    } else {
+                        showMessage(this@MainActivity, getString(R.string.generic_error_message))
+                        Log.e(TAG, fileUri.toString())
+                    }
                 }
             }
         }
@@ -297,6 +300,6 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
         private const val CREATE_STORAGE_REQUEST_CODE = 1002
         private const val IMPORT_STORAGE_REQUEST_CODE = 1003
-        private const val PICKFILE_RESULT_CODE = 2001
+        private const val PICK_BACKUP_RESULT_CODE = 2001
     }
 }
