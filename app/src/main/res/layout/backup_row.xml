@@ -210,17 +210,6 @@
         android:paddingEnd="16dp">
 
         <TextView
-            android:id="@+id/size"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="3456 KBs"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/date"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintVertical_chainStyle="spread" />
-
-        <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -229,11 +218,22 @@
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end"
-            app:layout_constraintBottom_toTopOf="@+id/date"
+            app:layout_constraintBottom_toTopOf="@+id/size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread"
             tools:text="Backup #1" />
+
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="3456 KBs"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintVertical_chainStyle="spread" />
 
         <TextView
             android:id="@+id/date"
@@ -242,9 +242,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/size"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintTop_toTopOf="@+id/size"
             tools:text="15 nov 2019" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
