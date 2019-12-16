@@ -204,31 +204,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:paddingStart="16dp"
         android:clickable="true"
         android:focusable="true"
+        android:paddingStart="16dp"
         android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/variant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/size"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            tools:text="DEBUG" />
 
         <TextView
             android:id="@+id/size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="3456 KBs"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/variant"
             app:layout_constraintRight_toLeftOf="@id/date"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintVertical_chainStyle="spread" />
+            app:layout_constraintVertical_chainStyle="spread"
+            tools:text="3456 KBs" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:maxLines="1"
-            android:ellipsize="end"
             app:layout_constraintBottom_toTopOf="@+id/date"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
