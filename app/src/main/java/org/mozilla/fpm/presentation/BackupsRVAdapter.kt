@@ -4,6 +4,7 @@
 
 package org.mozilla.fpm.presentation
 
+import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,7 +72,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
             title.text = backup.name.replace(".$MIME_TYPE", "")
             variant.text = backup.variant
             date.text = backup.createdAt
-            size.text = String.format(itemView.resources.getString(R.string.file_size), backup.size)
+            size.text = Formatter.formatShortFileSize(itemView.context, backup.size)
             apply.setOnClickListener { listener.onApplyClick(backup) }
             share.setOnClickListener { listener.onShareClick(backup) }
             edit.setOnClickListener { listener.onEditClick(backup, position) }
