@@ -184,10 +184,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
     }
 
     override fun showLoading() {
+        refresh_layout.isEnabled = true
         refresh_layout.isRefreshing = true
     }
 
     override fun hideLoading() {
+        refresh_layout.isEnabled = false
         refresh_layout.isRefreshing = false
     }
 
