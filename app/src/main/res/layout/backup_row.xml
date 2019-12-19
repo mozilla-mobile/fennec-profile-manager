@@ -218,10 +218,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/variant
-            android:maxLines="1"
-            android:ellipsize="end"
-            app:layout_constraintBottom_toTopOf="@+id/size"
+            app:layout_constraintBottom_toTopOf="@+id/variant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread"
@@ -251,15 +248,6 @@
             app:layout_constraintTop_toTopOf="@+id/variant"
             android:textSize="12sp"
             tools:text="3456 KBs" />
-            android:id="@+id/size"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="3456 KBs"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintVertical_chainStyle="spread" />
                                                              
         <TextView
             android:id="@+id/date"
@@ -271,9 +259,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/variant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/variant"
-            app:layout_constraintBottom_toBottomOf="@id/size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/size"
             tools:text="15 nov 2019" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
