@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mozilla.fpm.data.BackupRepository
 import org.mozilla.fpm.data.BackupRepositoryImpl
+import org.mozilla.fpm.data.BackupRepositoryImpl.MIME_TYPE
 import org.mozilla.fpm.models.Backup
 
 class MainPresenter : MainContract.Presenter {
@@ -51,7 +52,7 @@ class MainPresenter : MainContract.Presenter {
         GlobalScope.launch(Dispatchers.Main) {
             view?.showLoading()
             withContext(Dispatchers.IO) { backupsRepository.create(backupName) }
-            val backup = withContext(Dispatchers.Default) { backupsRepository.get("$backupName.zip") }
+            val backup = withContext(Dispatchers.Default) { backupsRepository.get("$backupName.$MIME_TYPE") }
             view?.hideLoading()
             view?.onBackupCreated(backup)
         }

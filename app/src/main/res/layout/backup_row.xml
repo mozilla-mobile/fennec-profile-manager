@@ -204,18 +204,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
-        android:paddingStart="16dp"
         android:clickable="true"
         android:focusable="true"
+        android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="16sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/variant
             android:maxLines="1"
             android:ellipsize="end"
             app:layout_constraintBottom_toTopOf="@+id/size"
@@ -225,6 +228,29 @@
             tools:text="Backup #1" />
 
         <TextView
+            android:id="@+id/variant"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/size"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintVertical_chainStyle="spread"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="12sp"
+            tools:text="DEBUG" />
+
+        <TextView
+            android:id="@+id/size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/variant"
+            app:layout_constraintLeft_toRightOf="@id/variant"
+            app:layout_constraintRight_toLeftOf="@id/date"
+            app:layout_constraintTop_toTopOf="@+id/variant"
+            android:textSize="12sp"
+            tools:text="3456 KBs" />
             android:id="@+id/size"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -234,7 +260,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             app:layout_constraintVertical_chainStyle="spread" />
-
+                                                             
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
@@ -242,6 +268,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/variant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/variant"
             app:layout_constraintBottom_toBottomOf="@id/size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/size"

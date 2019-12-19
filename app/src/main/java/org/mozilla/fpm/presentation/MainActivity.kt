@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.R
 import org.mozilla.fpm.data.BackupRepositoryImpl
+import org.mozilla.fpm.data.BackupRepositoryImpl.MIME_TYPE
 import org.mozilla.fpm.data.PrefsManager
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.presentation.mvp.MainContract
@@ -139,7 +140,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.setTitle(getString(R.string.edit_backup_name))
         val dialogLayout = inflater.inflate(R.layout.alert_input, null)
         val input = dialogLayout.findViewById<EditText>(R.id.input)
-        input.setText(item.name.replace(".zip", ""))
+        input.setText(item.name.replace(".$MIME_TYPE", ""))
         builder.setView(dialogLayout)
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
             run {
@@ -149,7 +150,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                 }
 
                 presenter.renameBackup(item, input.text.toString())
-                adapter.update(Backup(input.text.toString(), item.createdAt, item.size), position)
+                adapter.update(Backup(input.text.toString(), item.createdAt, item.variant, item.size), position)
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)

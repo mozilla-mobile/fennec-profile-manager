@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.utils.CryptUtils
 import org.mozilla.fpm.utils.Utils
@@ -23,6 +24,7 @@ import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
+    const val MIME_TYPE = "fpm"
     private const val KILOBYTE: Long = 1024
     private lateinit var ctx: Context
 
@@ -36,17 +38,51 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         val deployPath = getBackupDeployPath()
+        val signatureByteData = BuildConfig.FIREFOX_PACKAGE_NAME.toByteArray()
 
         if (deployPath != null) {
-            ZipUtils().compress(deployPath, "${getBackupStoragePath(ctx)}/${k}_arch.zip")
+            // compress everything
+            ZipUtils().compress(deployPath, "${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE")
+
+            // now encrypt the archive
             CryptUtils.encrypt(
-                FileInputStream("${getBackupStoragePath(ctx)}/${k}_arch.zip"),
-                FileOutputStream("${getBackupStoragePath(ctx)}/$k.zip")
+                FileInputStream("${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE"),
+                FileOutputStream("${getBackupStoragePath(ctx)}/$k.$MIME_TYPE")
             )
-            File("${getBackupStoragePath(ctx)}/${k}_arch.zip").delete()
+            // delete the temporary file
+            File("${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE").delete()
+
+            // write the signature
+            val fos = FileOutputStream("${getBackupStoragePath(ctx)}/$k.$MIME_TYPE", true)
+            fos.write(signatureByteData)
+            fos.close()
+
             return
         }
         Log.w(javaClass.name, "No Firefox app installed. Please install one!")
+    }
+
+    override fun getFileSignature(path: String): String? {
+        val fileByteArray = FileInputStream(path).readBytes()
+        val fileSize = fileByteArray.size
+
+        BuildConfig.FENNEC_PACKAGE_NAMES.forEach {
+            var matched = true
+            val signatureByteArray = it.toByteArray()
+            val signatureSize = signatureByteArray.size
+
+            for (i in 0 until signatureSize) {
+                if (signatureByteArray[i].compareTo(fileByteArray[fileSize - signatureSize + i]) != 0) {
+                    matched = false
+                }
+            }
+
+            if (matched) {
+                return it
+            }
+        }
+
+        return null
     }
 
     override fun import(fileUri: Uri, fileName: String) {
@@ -68,12 +104,25 @@ object BackupRepositoryImpl : BackupRepository {
         val deployPath = getBackupDeployPath()
 
         if (deployPath != null) {
+            // remove the current state of Firefox
             File(deployPath).deleteRecursively()
+
+            val sign = getFileSignature("${getBackupStoragePath(ctx)}/$name")
+            val backupFile = File("${getBackupStoragePath(ctx)}/$name")
+            if (sign != null) {
+                val unsingedBytes =
+                    backupFile.readBytes().dropLast(sign.toByteArray().size).toByteArray()
+                FileOutputStream("${getBackupStoragePath(ctx)}/${name}_temp").write(unsingedBytes)
+            }
+
             CryptUtils.decrypt(
-                FileInputStream("${getBackupStoragePath(ctx)}/$name"),
+                FileInputStream("${getBackupStoragePath(ctx)}/${name}_temp"),
                 FileOutputStream("${getCryptedStoragePath(ctx)}/$name")
             )
             ZipUtils().extract("${getCryptedStoragePath(ctx)}/$name", getBackupDeployPath())
+
+            // delete the temp files
+            File("${getBackupStoragePath(ctx)}/${name}_temp").delete()
             File("${getCryptedStoragePath(ctx)}/$name").delete()
             return
         }
@@ -91,11 +140,16 @@ object BackupRepositoryImpl : BackupRepository {
     override fun get(k: String): Backup {
         File(getBackupStoragePath(ctx)).listFiles()?.forEach {
             if (it.name == k) {
-                return Backup(it.name, Utils.getFormattedDate(it.lastModified()), it.length() / KILOBYTE)
+                return Backup(
+                    it.name,
+                    Utils.getFormattedDate(it.lastModified()),
+                    getFileSignature("${getBackupStoragePath(ctx)}/${it.name}"),
+                    it.length() / KILOBYTE
+                )
             }
         }
 
-        return Backup("", "", 0)
+        return Backup("", "", "", 0)
     }
 
     override fun getAll(): List<Backup> {
@@ -106,7 +160,14 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         File(getBackupStoragePath(ctx)).listFiles()?.forEach {
-            backupsList.add(Backup(it.name, Utils.getFormattedDate(it.lastModified()), it.length() / KILOBYTE))
+            backupsList.add(
+                Backup(
+                    it.name,
+                    Utils.getFormattedDate(it.lastModified()),
+                    getFileSignature("${getBackupStoragePath(ctx)}/${it.name}"),
+                    it.length() / KILOBYTE
+                )
+            )
         }
 
         return backupsList

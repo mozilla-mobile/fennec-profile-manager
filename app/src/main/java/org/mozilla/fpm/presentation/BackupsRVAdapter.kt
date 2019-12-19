@@ -13,6 +13,7 @@ import androidx.annotation.NonNull
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import org.mozilla.fpm.R
+import org.mozilla.fpm.data.BackupRepositoryImpl.MIME_TYPE
 import org.mozilla.fpm.models.Backup
 
 class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>() {
@@ -58,6 +59,7 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
     inner class BackupViewHolder(@NonNull itemView: View) :
         RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.title)
+        private val variant: TextView = itemView.findViewById(R.id.variant)
         private val size: TextView = itemView.findViewById(R.id.size)
         private val date: TextView = itemView.findViewById(R.id.date)
         private val apply: ConstraintLayout = itemView.findViewById(R.id.apply_container)
@@ -67,7 +69,8 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
 
         fun bind(position: Int) {
             val backup: Backup = dataSource[position]
-            title.text = backup.name.replace(".zip", "")
+            title.text = backup.name.replace(".$MIME_TYPE", "")
+            variant.text = backup.variant
             date.text = backup.createdAt
             size.text = Formatter.formatShortFileSize(itemView.context, backup.size)
             apply.setOnClickListener { listener.onApplyClick(backup) }

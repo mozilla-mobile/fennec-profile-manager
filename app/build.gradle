@@ -12,6 +12,17 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         flavorDimensions "default"
+
+        buildConfigField "String[]", "FENNEC_PACKAGE_NAMES",
+                "{" + "\"fennec_andrei.a.lazar\"," +
+                        "\"org.mozilla.fennec_aurora\"," +
+                        "\"org.mozilla.firefox_beta\"," +
+                        "\"org.mozilla.firefox\"" + "}"
+
+        buildConfigField "String[]", "FENNEC_SHARED_USER_IDS",
+                "{" + "\"org.mozilla.fennec_andrei.a.lazar.sharedID\"," +
+                        "\"org.mozilla.fennec.sharedID\"," +
+                        "\"org.mozilla.firefox.sharedID\"" + "}"
     }
 
     buildTypes {
@@ -22,39 +33,52 @@ android {
     }
 
     productFlavors {
+        def  FENNEC_PACKAGE_NAMES = [
+                '"org.mozilla.fennec_andrei.a.lazar"',
+                '"org.mozilla.fennec_aurora"',
+                '"org.mozilla.firefox_beta"',
+                '"org.mozilla.firefox'
+        ]
+
+        def FENNEC_SHARED_USER_IDS = [
+                "org.mozilla.fennec_andrei.a.lazar.sharedID",
+                "org.mozilla.fennec.sharedID",
+                "org.mozilla.firefox.sharedID"
+        ]
+
         dev {
             applicationId "org.mozilla.fpm_debug"
-            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_vlad.baicu"'
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", FENNEC_PACKAGE_NAMES[0]
             resValue "string", "app_name", "FPM Dev"
-            manifestPlaceholders = [shareduserid: "org.mozilla.fennec_vlad.baicu.sharedID"]
+            manifestPlaceholders = [shareduserid: FENNEC_SHARED_USER_IDS[0]]
         }
 
         nightly {
             applicationId "org.mozilla.fpm_nightly"
-            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.fennec_aurora"'
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", FENNEC_PACKAGE_NAMES[1]
             resValue "string", "app_name", "FPM Nightly"
-            manifestPlaceholders = [shareduserid: "org.mozilla.fennec.sharedID"]
+            manifestPlaceholders = [shareduserid: FENNEC_SHARED_USER_IDS[1]]
         }
 
         beta {
             applicationId "org.mozilla.fpm_beta"
-            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox_beta"'
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", FENNEC_PACKAGE_NAMES[2]
             resValue "string", "app_name", "FPM Beta"
-            manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID"]
+            manifestPlaceholders = [shareduserid: FENNEC_SHARED_USER_IDS[2]]
         }
 
         prod {
             applicationId "org.mozilla.fpm"
-            buildConfigField "String", "FIREFOX_PACKAGE_NAME", '"org.mozilla.firefox"'
+            buildConfigField "String", "FIREFOX_PACKAGE_NAME", FENNEC_PACKAGE_NAMES[3]
             resValue "string", "app_name", "FPM"
-            manifestPlaceholders = [shareduserid: "org.mozilla.firefox.sharedID"]
+            manifestPlaceholders = [shareduserid: FENNEC_SHARED_USER_IDS[2]]
         }
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.1.0'
