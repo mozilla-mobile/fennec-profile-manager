@@ -37,7 +37,7 @@ android {
                 '"org.mozilla.fennec_andrei.a.lazar"',
                 '"org.mozilla.fennec_aurora"',
                 '"org.mozilla.firefox_beta"',
-                '"org.mozilla.firefox'
+                '"org.mozilla.firefox"'
         ]
 
         def FENNEC_SHARED_USER_IDS = [
