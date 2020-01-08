@@ -287,7 +287,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
-                presenter.createBackup(input.text.toString())
+                presenter.createBackup(input.text.toString().replace(" ", "_"))
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)
