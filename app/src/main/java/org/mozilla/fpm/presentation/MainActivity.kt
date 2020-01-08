@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         shareIntent.putExtra(
             Intent.EXTRA_STREAM,
             FileProvider.getUriForFile(
-                this, this.applicationContext.packageName + ".provider",
+                this, BuildConfig.APPLICATION_ID + ".provider",
                 File("${getBackupStoragePath(this)}/${item.name}")
             )
         )
