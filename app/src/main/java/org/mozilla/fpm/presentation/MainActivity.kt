@@ -13,6 +13,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextThemeWrapper
+import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.R
@@ -51,6 +55,25 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         presenter.attachView(this@MainActivity)
 
         adapter = BackupsRVAdapter()
+        backups_rv.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                when (e.action) {
+                    ACTION_DOWN -> {
+                        create_fab.hide()
+                        import_fab.hide()
+                    }
+                    ACTION_UP -> {
+                        create_fab.show()
+                        import_fab.show()
+                    }
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+        })
         backups_rv.layoutManager = LinearLayoutManager(this)
         backups_rv.addItemDecoration(
             DividerItemDecoration(
