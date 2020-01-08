@@ -66,8 +66,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/import_label"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/create_fab"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_file_download_orange_24dp"
         tools:ignore="UnusedAttribute" />
 
