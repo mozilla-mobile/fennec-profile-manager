@@ -13,6 +13,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextThemeWrapper
+import android.view.MotionEvent.ACTION_DOWN
+import android.view.MotionEvent.ACTION_UP
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
@@ -51,6 +53,21 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         presenter.attachView(this@MainActivity)
 
         adapter = BackupsRVAdapter()
+        backups_rv.setOnTouchListener { _, event ->
+            when (event.action) {
+                ACTION_DOWN -> {
+                    create_fab.hide()
+                    import_fab.hide()
+                    true
+                }
+                ACTION_UP -> {
+                    create_fab.show()
+                    import_fab.show()
+                    true
+                }
+                else -> false
+            }
+        }
         backups_rv.layoutManager = LinearLayoutManager(this)
         backups_rv.addItemDecoration(
             DividerItemDecoration(
