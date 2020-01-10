@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun onShareClick(item: Backup) {
         val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "application/zip"
+        shareIntent.type = "*/*"
         shareIntent.putExtra(
             Intent.EXTRA_STREAM,
             FileProvider.getUriForFile(
@@ -287,7 +287,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
-                presenter.createBackup(input.text.toString().replace(" ", "_"))
+                presenter.createBackup(input.text.toString())
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)
@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     fun launchFilePicker() {
         var pickIntent = Intent(Intent.ACTION_GET_CONTENT)
-        pickIntent.type = "application/zip"
+        pickIntent.type = "*/*"
         pickIntent = Intent.createChooser(pickIntent, getString(R.string.choose_backup))
         startActivityForResult(pickIntent, PICK_BACKUP_RESULT_CODE)
     }
