@@ -8,6 +8,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.core.net.toFile
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.utils.CryptUtils
@@ -25,7 +26,6 @@ import java.io.OutputStream
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
     const val MIME_TYPE = "fpm"
-    private const val KILOBYTE: Long = 1024
     private lateinit var ctx: Context
 
     fun setContext(ctx: Context) {
@@ -91,7 +91,7 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         val inputStream: InputStream? = ctx.contentResolver.openInputStream(fileUri)
-        val copy = File("${getBackupStoragePath(ctx)}/${fileName.replace(" ", "_")}")
+        val copy = Uri.parse("file://${getBackupStoragePath(ctx)}/$fileName").toFile()
         val outputStream: OutputStream = FileOutputStream(copy)
         inputStream?.copyTo(outputStream, DEFAULT_BUFFER_SIZE)
     }
@@ -144,7 +144,7 @@ object BackupRepositoryImpl : BackupRepository {
                     it.name,
                     Utils.getFormattedDate(it.lastModified()),
                     getFileSignature("${getBackupStoragePath(ctx)}/${it.name}"),
-                    it.length() / KILOBYTE
+                    it.length()
                 )
             }
         }
@@ -165,7 +165,7 @@ object BackupRepositoryImpl : BackupRepository {
                     it.name,
                     Utils.getFormattedDate(it.lastModified()),
                     getFileSignature("${getBackupStoragePath(ctx)}/${it.name}"),
-                    it.length() / KILOBYTE
+                    it.length()
                 )
             )
         }
