@@ -1,5 +1,7 @@
 package org.mozilla.fpm.utils;
 
+import org.mozilla.fpm.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 public final class CryptUtils {
     private static Cipher ecipher;
     private static Cipher dcipher;
-    private static final String KEY = "MySecret"; //TODO move this somewhere else
+    private static final String KEY = BuildConfig.SECRET_KEY;
 
     // 8-byte initialization vector
     private static byte[] iv = {
