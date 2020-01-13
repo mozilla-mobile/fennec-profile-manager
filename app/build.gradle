@@ -27,7 +27,7 @@ android {
         def file = new File("secret.key")
         assert file.exists() : "file not found"
         assert file.canRead() : "file cannot be read"
-        buildConfigField "String", "SECRET_KEY", file.text
+        buildConfigField "String", "SECRET_KEY", '"' + file.text.replace("\n", "") + '"'
     }
 
     buildTypes {
