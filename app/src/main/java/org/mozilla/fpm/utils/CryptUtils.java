@@ -2,7 +2,6 @@ package org.mozilla.fpm.utils;
 
 import org.mozilla.fpm.BuildConfig;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.spec.AlgorithmParameterSpec;
@@ -14,37 +13,18 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class CryptUtils {
-    private static Cipher ecipher;
-    private static Cipher dcipher;
     private static final String KEY = BuildConfig.SECRET_KEY;
-
-    // 8-byte initialization vector
-    private static byte[] iv = {
+    private static final byte[] iv = {
             (byte) 0xB2, (byte) 0x12, (byte) 0xD5, (byte) 0xB2,
             (byte) 0x44, (byte) 0x21, (byte) 0xC3, (byte) 0xC3
     };
 
-    public static void call() {
+    public void encrypt(InputStream is, OutputStream os) {
         try {
-            SecretKeySpec key = new SecretKeySpec(KEY.getBytes(), "DES");
-
-            AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-
-            ecipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            dcipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-
+            final Cipher ecipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            final SecretKeySpec key = new SecretKeySpec(KEY.getBytes(), "DES");
+            final AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
             ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public static void encrypt(InputStream is, OutputStream os) {
-        try {
-
-            call();
 
             byte[] buf = new byte[1024];
 
@@ -58,17 +38,19 @@ public final class CryptUtils {
             }
 
             // close all streams
+            is.close();
             os.close();
-
-        } catch (IOException e) {
-            System.out.println("I/O Error:" + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error:" + e.getMessage());
         }
-
     }
 
-    public static void decrypt(InputStream is, OutputStream os) {
+    public void decrypt(InputStream is, OutputStream os) {
         try {
-            call();
+            final Cipher dcipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            final SecretKeySpec key = new SecretKeySpec(KEY.getBytes(), "DES");
+            final AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
+            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
 
             byte[] buf = new byte[1024];
 
@@ -76,7 +58,7 @@ public final class CryptUtils {
             CipherInputStream cis = new CipherInputStream(is, dcipher);
 
             // read in the decrypted bytes and write the clear text to out
-            int numRead = 0;
+            int numRead;
             while ((numRead = cis.read(buf)) > 0) {
                 os.write(buf, 0, numRead);
             }
@@ -86,8 +68,8 @@ public final class CryptUtils {
             is.close();
             os.close();
 
-        } catch (IOException e) {
-            System.out.println("I/O Error:" + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error:" + e.getMessage());
         }
     }
 }

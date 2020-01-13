@@ -17,11 +17,7 @@ import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.getCryptedStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.ZipUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
@@ -45,7 +41,7 @@ object BackupRepositoryImpl : BackupRepository {
             ZipUtils().compress(deployPath, "${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE")
 
             // now encrypt the archive
-            CryptUtils.encrypt(
+            CryptUtils().encrypt(
                 FileInputStream("${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE"),
                 FileOutputStream("${getBackupStoragePath(ctx)}/$k.$MIME_TYPE")
             )
@@ -70,6 +66,8 @@ object BackupRepositoryImpl : BackupRepository {
             var matched = true
             val signatureByteArray = it.toByteArray()
             val signatureSize = signatureByteArray.size
+
+            if (fileSize - signatureSize < 0) return@forEach
 
             for (i in 0 until signatureSize) {
                 if (signatureByteArray[i].compareTo(fileByteArray[fileSize - signatureSize + i]) != 0) {
@@ -115,7 +113,7 @@ object BackupRepositoryImpl : BackupRepository {
                 FileOutputStream("${getBackupStoragePath(ctx)}/${name}_temp").write(unsingedBytes)
             }
 
-            CryptUtils.decrypt(
+            CryptUtils().decrypt(
                 FileInputStream("${getBackupStoragePath(ctx)}/${name}_temp"),
                 FileOutputStream("${getCryptedStoragePath(ctx)}/$name")
             )
