@@ -1,5 +1,7 @@
 package org.mozilla.fpm.utils;
 
+import android.util.Log;
+
 import org.mozilla.fpm.BuildConfig;
 
 import java.io.InputStream;
@@ -13,6 +15,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public final class CryptUtils {
+    private static final String LOGTAG = "CryptUtils";
     private static final String KEY = BuildConfig.SECRET_KEY;
     private static final byte[] iv = {
             (byte) 0xB2, (byte) 0x12, (byte) 0xD5, (byte) 0xB2,
@@ -41,7 +44,7 @@ public final class CryptUtils {
             is.close();
             os.close();
         } catch (Exception e) {
-            System.out.println("Error:" + e.getMessage());
+            Log.e(LOGTAG, "Error: " + e.getMessage());
         }
     }
 
@@ -69,7 +72,7 @@ public final class CryptUtils {
             os.close();
 
         } catch (Exception e) {
-            System.out.println("Error:" + e.getMessage());
+            Log.e(LOGTAG, "Error: " + e.getMessage());
         }
     }
 }
