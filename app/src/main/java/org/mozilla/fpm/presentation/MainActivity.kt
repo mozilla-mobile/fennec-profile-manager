@@ -70,8 +70,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                 return false
             }
 
+            @Suppress("EmptyFunctionBlock")
             override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
 
+            @Suppress("EmptyFunctionBlock")
             override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
         })
         backups_rv.layoutManager = LinearLayoutManager(this)

@@ -17,7 +17,11 @@ import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.getCryptedStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.ZipUtils
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
