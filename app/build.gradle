@@ -24,10 +24,17 @@ android {
                         "\"org.mozilla.fennec.sharedID\"," +
                         "\"org.mozilla.firefox.sharedID\"" + "}"
 
-        def file = new File("secret.key")
-        assert file.exists() : "file not found"
-        assert file.canRead() : "file cannot be read"
-        buildConfigField "String", "SECRET_KEY", '"' + file.text.replace("\n", "") + '"'
+        // the secret key size depends on the algorithm used for encrypting / decrypting
+        def secreyKeySizeReq = 8
+        def secretKeyFilename = "secret.key"
+        def file = new File(secretKeyFilename)
+        assert file.exists() : "\"$secretKeyFilename\" file not found"
+        assert file.canRead() : "\"$secretKeyFilename\" file cannot be read"
+        def secretKey = file.text.replace("\n", "")
+        assert (secretKey.bytes.length == secreyKeySizeReq) :
+                "Secret key declared in the \"$secretKeyFilename\" file has ${secretKey.bytes.length} bytes." +
+                        "\nNeed it to have $secreyKeySizeReq bytes.\n"
+        buildConfigField "String", "SECRET_KEY", '"' + secretKey + '"'
     }
 
     buildTypes {

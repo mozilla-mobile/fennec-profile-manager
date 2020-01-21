@@ -5,6 +5,7 @@
 package org.mozilla.fpm.utils;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -22,6 +23,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
+    private static final String LOGTAG = "ZipUtils";
     private List<String> fileList = new ArrayList<>();
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -51,11 +53,11 @@ public class ZipUtils {
                     // Close the zip entry.
                     zos.closeEntry();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Log.e(LOGTAG, "Error: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOGTAG, "Error: " + e.getMessage());
         }
     }
 
@@ -119,4 +121,3 @@ public class ZipUtils {
 
     }
 }
-
