@@ -25,15 +25,15 @@ android {
                         "\"org.mozilla.firefox.sharedID\"" + "}"
 
         // the secret key size depends on the algorithm used for encrypting / decrypting
-        def secreyKeySizeReq = 8
+        def secretKeySizeReq = 32
         def secretKeyFilename = "secret.key"
         def file = new File(secretKeyFilename)
         assert file.exists() : "\"$secretKeyFilename\" file not found"
         assert file.canRead() : "\"$secretKeyFilename\" file cannot be read"
         def secretKey = file.text.replace("\n", "")
-        assert (secretKey.bytes.length == secreyKeySizeReq) :
+        assert (secretKey.bytes.length == secretKeySizeReq) :
                 "Secret key declared in the \"$secretKeyFilename\" file has ${secretKey.bytes.length} bytes." +
-                        "\nNeed it to have $secreyKeySizeReq bytes.\n"
+                        "\nNeed it to have $secretKeySizeReq bytes.\n"
         buildConfigField "String", "SECRET_KEY", '"' + secretKey + '"'
     }
 
