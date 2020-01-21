@@ -14,6 +14,7 @@
     <string name="edit">Edit</string>
     <string name="no_backups_message">No backups are currently available. Please create or import a new backup.</string>
     <string name="import_prompt">Import</string>
+    <string name="import_hint">Select a .fpm file</string>
     <string name="create_prompt">Create</string>
     <string name="backup_name">Backup name</string>
     <string name="set_backup_name">Set backup name</string>
@@ -31,6 +32,7 @@
     <string name="warning_title">Warning</string>
     <string name="warning_message">This will overwrite the entire current state of the app, do you want to proceed?</string>
     <string name="generic_error_message">Something went wrong, please try again later.</string>
+    <string name="invalid_backup_extension_message">This does not seem to be a FPM backup.\nCannot import.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="choose_backup">Choose backup archive</string>

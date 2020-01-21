@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         import_fab.setOnClickListener {
             if (checkStoragePermission(this, IMPORT_STORAGE_REQUEST_CODE)) {
                 hideFirstrun()
+                showMessage(this, getString(R.string.import_hint))
                 launchFilePicker()
             }
         }
@@ -296,23 +297,31 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.show()
     }
 
-    fun launchFilePicker() {
+    private fun launchFilePicker() {
+        // Using a custom mime time the OS doesn't know about means we cannot force a filter for these files.
+        // The user will be able to select any kind of file so we should verify the picker response afterwards.
         var pickIntent = Intent(Intent.ACTION_GET_CONTENT)
         pickIntent.type = "*/*"
         pickIntent = Intent.createChooser(pickIntent, getString(R.string.choose_backup))
         startActivityForResult(pickIntent, PICK_BACKUP_RESULT_CODE)
     }
 
+    @Suppress("NestedBlockDepth")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             PICK_BACKUP_RESULT_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val fileUri: Uri? = data?.data
-                    val fileName: String? = getFileNameFromUri(this@MainActivity, fileUri)
+                    val fileName: String? = getFileNameFromUri(this, fileUri)
                     if (fileUri != null && !fileName.isNullOrEmpty()) {
-                        presenter.importBackup(fileUri, fileName)
+                        if (fileName.endsWith(".fpm")) {
+                            presenter.importBackup(fileUri, fileName)
+                        } else {
+                            showMessage(this, getString(R.string.invalid_backup_extension_message))
+                            Log.w(TAG, "Invalid backup imported: $fileName")
+                        }
                     } else {
-                        showMessage(this@MainActivity, getString(R.string.generic_error_message))
+                        showMessage(this, getString(R.string.generic_error_message))
                         Log.e(TAG, fileUri.toString())
                     }
                 }
