@@ -25,6 +25,7 @@ import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
+    private const val LOGTAG = "BackupRepository"
     const val MIME_TYPE = "fpm"
     private lateinit var ctx: Context
 
@@ -107,7 +108,10 @@ object BackupRepositoryImpl : BackupRepository {
 
         if (deployPath != null) {
             // remove the current state of Firefox
-            File(deployPath).deleteRecursively()
+
+            if (File(deployPath).deleteRecursively().not()) {
+                Log.w(LOGTAG, "Could not clear Fennec's internal storage")
+            }
 
             val sign = getFileSignature("${getBackupStoragePath(ctx)}/$name")
             val backupFile = File("${getBackupStoragePath(ctx)}/$name")
