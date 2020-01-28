@@ -13,6 +13,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,7 +76,6 @@ public class ZipUtils {
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
             String currentEntry = entry.getName();
             File destFile = new File(destinationDir, currentEntry);
-            //destFile = new File(newPath, destFile.getName());
             File destinationParent = destFile.getParentFile();
 
             // create the parent directory structure if needed
@@ -89,17 +89,28 @@ public class ZipUtils {
                 byte[] data = new byte[BUFFER];
 
                 // write the current file to disk
-                FileOutputStream fos = new FileOutputStream(destFile);
-                BufferedOutputStream dest = new BufferedOutputStream(fos,
-                        BUFFER);
+                try (FileOutputStream fos = new FileOutputStream(destFile);
+                     BufferedOutputStream dest = new BufferedOutputStream(fos, BUFFER)){
 
-                // read and write until last byte is encountered
-                while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
-                    dest.write(data, 0, currentByte);
+                    // read and write until last byte is encountered
+                    while ((currentByte = is.read(data, 0, BUFFER)) != -1) {
+                        dest.write(data, 0, currentByte);
+                    }
+                } catch (FileNotFoundException e) {
+                    // On some devices the data/data/app_package/lib directory is just a symlink
+                    // while on other devices that directory contains the actual extracted libs
+                    // The actual files can be overwritten by us
+                    // The symlinked files (and directory) is only readable by us and so when trying to
+                    // create a new FileOutputStream for such a file we would get a FileNotFoundException
+                    // Do a speculative check that the file that caused the exception is one such symlinked file.
+                    if (destFile.exists() && destFile.length() > 0 && !destFile.canWrite()) {
+                        Log.w(LOGTAG, "Could not write " + destFile.getName() + ". Ignoring.");
+                    } else {
+                        throw e;
+                    }
+                } finally {
+                    is.close();
                 }
-                dest.flush();
-                dest.close();
-                is.close();
             }
         }
     }
