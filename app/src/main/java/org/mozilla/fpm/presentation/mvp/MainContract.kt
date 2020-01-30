@@ -26,6 +26,8 @@ interface MainContract {
         fun hideLoading()
 
         fun showBackupCreatedWithDifferentNameMessage(actualBackupName: String)
+
+        fun onBackupRenamed(renamedBackup: Backup, position: Int)
     }
 
     interface Presenter : BasePresenter<View> {
@@ -37,7 +39,7 @@ interface MainContract {
 
         fun applyBackup(backupName: String)
 
-        fun renameBackup(backup: Backup, newBackupName: String)
+        fun renameBackup(backup: Backup, newBackupName: String, position: Int)
 
         fun deleteBackup(backupName: String)
     }

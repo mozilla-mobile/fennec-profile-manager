@@ -166,18 +166,17 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.setTitle(getString(R.string.edit_backup_name))
         val dialogLayout = inflater.inflate(R.layout.alert_input, null)
         val input = dialogLayout.findViewById<EditText>(R.id.input)
-        input.setText(item.name.replace(".$MIME_TYPE", ""))
+        input.setText(item.name.substringBefore(".$MIME_TYPE"))
         builder.setView(dialogLayout)
         builder.setPositiveButton(getString(R.string.ok)) { _, _ ->
+            val updatedBackupName = input.text.toString()
             run {
-                if (input.text.isEmpty()) {
+                if (updatedBackupName.isEmpty()) {
                     showMessage(this@MainActivity, getString(R.string.error_input_null))
                     return@setPositiveButton
                 }
 
-                val newName = input.text.toString().plus(".$MIME_TYPE")
-                presenter.renameBackup(item, newName)
-                adapter.update(Backup(newName, item.createdAt, item.variant, item.size), position)
+                presenter.renameBackup(item, updatedBackupName, position)
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)
@@ -223,6 +222,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun showBackupCreatedWithDifferentNameMessage(actualBackupName: String) {
         showMessage(this, getString(R.string.backup_created_with_different_name_message, actualBackupName))
+    }
+
+    override fun onBackupRenamed(renamedBackup: Backup, position: Int) {
+        adapter.update(renamedBackup, position)
     }
 
     override fun onBackupApplied() {

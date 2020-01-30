@@ -88,9 +88,26 @@ class MainPresenter : MainContract.Presenter {
         }
     }
 
-    override fun renameBackup(backup: Backup, newBackupName: String) {
-        GlobalScope.launch(Dispatchers.Default) {
-            backupsRepository.update(backup, newBackupName)
+    override fun renameBackup(backup: Backup, newBackupName: String, position: Int) {
+        val mimeSuffix = ".$MIME_TYPE"
+        var actualBackupName = newBackupName
+        view?.showLoading()
+        GlobalScope.launch(Dispatchers.Main) {
+            val renamedBackup = withContext(Dispatchers.IO) {
+                actualBackupName = getUniqueBackupFilename(newBackupName).plus(".$MIME_TYPE")
+                backupsRepository.update(backup, actualBackupName)
+                backupsRepository.get(actualBackupName)
+            }
+
+            view?.let {
+                it.hideLoading()
+                if (renamedBackup != null) {
+                    it.onBackupRenamed(renamedBackup, position)
+                }
+                if (newBackupName.plus(mimeSuffix) != actualBackupName) {
+                    it.showBackupCreatedWithDifferentNameMessage(actualBackupName.substringBefore(mimeSuffix))
+                }
+            }
         }
     }
 
