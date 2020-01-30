@@ -175,8 +175,9 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
-                presenter.renameBackup(item, input.text.toString())
-                adapter.update(Backup(input.text.toString(), item.createdAt, item.variant, item.size), position)
+                val newName = input.text.toString().plus(".$MIME_TYPE")
+                presenter.renameBackup(item, newName)
+                adapter.update(Backup(newName, item.createdAt, item.variant, item.size), position)
             }
         }
         builder.setNegativeButton(getString(R.string.cancel), null)
