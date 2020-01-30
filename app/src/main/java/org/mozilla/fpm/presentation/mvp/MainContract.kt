@@ -24,6 +24,8 @@ interface MainContract {
         fun showLoading()
 
         fun hideLoading()
+
+        fun showBackupCreatedWithDifferentNameMessage(actualBackupName: String)
     }
 
     interface Presenter : BasePresenter<View> {

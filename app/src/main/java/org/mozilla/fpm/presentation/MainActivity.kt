@@ -221,6 +221,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         refresh_layout.isRefreshing = false
     }
 
+    override fun showBackupCreatedWithDifferentNameMessage(actualBackupName: String) {
+        showMessage(this, getString(R.string.backup_created_with_different_name_message, actualBackupName))
+    }
+
     override fun onBackupApplied() {
         showMessage(this, getString(R.string.backup_applied))
     }

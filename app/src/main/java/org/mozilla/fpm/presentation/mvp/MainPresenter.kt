@@ -35,7 +35,9 @@ class MainPresenter : MainContract.Presenter {
             withContext(Dispatchers.IO) { backupsRepository.import(fileUri, fileName) }
             val importedBackup = withContext(Dispatchers.Default) { backupsRepository.get(fileName) }
             view?.hideLoading()
-            view?.onBackupImported(importedBackup)
+            importedBackup?.let {
+                view?.onBackupImported(it)
+            }
         }
     }
 
@@ -49,12 +51,24 @@ class MainPresenter : MainContract.Presenter {
     }
 
     override fun createBackup(backupName: String) {
+        var actualBackupName = backupName
         GlobalScope.launch(Dispatchers.Main) {
             view?.showLoading()
-            withContext(Dispatchers.IO) { backupsRepository.create(backupName) }
-            val backup = withContext(Dispatchers.Default) { backupsRepository.get("$backupName.$MIME_TYPE") }
-            view?.hideLoading()
-            view?.onBackupCreated(backup)
+            val backup = withContext(Dispatchers.IO) {
+                actualBackupName = getUniqueBackupFilename(backupName)
+                backupsRepository.create(actualBackupName)
+                backupsRepository.get("$actualBackupName.$MIME_TYPE")
+            }
+
+            view?.let {
+                it.hideLoading()
+                if (backup != null) {
+                    it.onBackupCreated(backup)
+                }
+                if (backupName != actualBackupName) {
+                    it.showBackupCreatedWithDifferentNameMessage(actualBackupName)
+                }
+            }
         }
     }
 
@@ -76,5 +90,67 @@ class MainPresenter : MainContract.Presenter {
 
     override fun detachView() {
         this.view = null
+    }
+
+    /**
+     * Check if a backup with the *desiredName* does not already exists
+     *  and add an increment suffix if needed to get a new unique name starting from the *desiredName*.
+     *
+     *  @param desiredName the name to check if a backup exists with
+     *  @return <code>String</code>
+     *  - *desiredName* if a backup with this name does not already exists
+     *  - *desiredName* plus a digit suffix - for a new unique backup name
+     */
+    private suspend fun getUniqueBackupFilename(desiredName: String): String {
+        return when (backupsRepository.get("$desiredName.$MIME_TYPE") == null) {
+            true -> desiredName
+            false -> getFirstNonDuplicateFilename(desiredName, backupsRepository.getAll())
+        }
+    }
+
+    private suspend fun getFirstNonDuplicateFilename(
+        duplicatedFilename: String,
+        allBackups: List<Backup>
+    ): String {
+        // The desired filename could already follow our suffix system and end in a digit in parentheses.
+        // If so, continue incrementing from there until we have a unique suffix
+        // Or try to obtain a unique suffix starting with the digit 2.
+        val dupeSuffix = Regex(".*?\\((\\d+)\\)+$")
+        val matchResult = dupeSuffix.matchEntire(duplicatedFilename)
+        return when (matchResult != null) {
+            true -> {
+                val currentDupeSuffix =
+                    matchResult.groups[matchResult.groups.size - 1]!!.value.toInt()
+                val uniqueIncrementedSuffix = getUniqueIncrementalSuffix(
+                    duplicatedFilename.substringBeforeLast("($currentDupeSuffix)"),
+                    currentDupeSuffix + 1,
+                    allBackups
+                )
+                duplicatedFilename.replaceAfterLast("(", "${uniqueIncrementedSuffix})")
+            }
+            false -> {
+                val uniqueIncrementedSuffix = getUniqueIncrementalSuffix(
+                    duplicatedFilename, 2, allBackups
+                )
+                duplicatedFilename.plus("($uniqueIncrementedSuffix)")
+            }
+        }
+    }
+
+    private suspend fun getUniqueIncrementalSuffix(
+        nonSufixedFilename: String, suffixValue: Int, allBackups: List<Backup>
+    ): Int {
+        // Validate that the starting value is not the incremental suffix of another existing backup
+        // If it is, increment the suffix value until we have a unique one
+        return when (allBackups.firstOrNull { backup ->
+            // Backups names will come with our mime type. Don't care about that.
+            with(backup.name.substringBefore(".$MIME_TYPE", backup.name)) {
+                startsWith(nonSufixedFilename) && endsWith("($suffixValue)")
+            }
+        } == null) // there is no previous backup ending in suffixValue
+        {
+            true -> suffixValue
+            false -> getUniqueIncrementalSuffix(nonSufixedFilename, suffixValue + 1, allBackups)
+        }
     }
 }

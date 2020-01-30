@@ -36,4 +36,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="choose_backup">Choose backup archive</string>
+    <string name="backup_created_with_different_name_message">Backup was saved under the name \"%1$s\" to not overwrite an already existing backup with the indicated name</string>
 </resources>
