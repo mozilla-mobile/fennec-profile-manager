@@ -143,7 +143,7 @@ object BackupRepositoryImpl : BackupRepository {
         File("${getBackupStoragePath(ctx)}/${t.name}").renameTo(File("${getBackupStoragePath(ctx)}/$k"))
     }
 
-    override fun get(k: String): Backup {
+    override fun get(k: String): Backup? {
         File(getBackupStoragePath(ctx)).listFiles()?.forEach {
             if (it.name == k) {
                 return Backup(
@@ -155,7 +155,7 @@ object BackupRepositoryImpl : BackupRepository {
             }
         }
 
-        return Backup("", "", "", 0)
+        return null
     }
 
     override fun getAll(): List<Backup> {
