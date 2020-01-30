@@ -240,13 +240,12 @@
 
         <TextView
             android:id="@+id/size"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@+id/variant"
-            app:layout_constraintLeft_toRightOf="@id/variant"
-            app:layout_constraintRight_toLeftOf="@id/date"
             app:layout_constraintTop_toTopOf="@+id/variant"
             android:textSize="12sp"
+            android:gravity="center"
             tools:text="3456 KBs" />
                                                              
         <TextView
