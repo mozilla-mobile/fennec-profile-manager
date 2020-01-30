@@ -30,13 +30,23 @@ class MainPresenter : MainContract.Presenter {
     }
 
     override fun importBackup(fileUri: Uri, fileName: String) {
+        val mimeSuffix = ".$MIME_TYPE"
+        var actualBackupName = fileName.substringBefore(mimeSuffix)
         GlobalScope.launch(Dispatchers.Main) {
             view?.showLoading()
-            withContext(Dispatchers.IO) { backupsRepository.import(fileUri, fileName) }
-            val importedBackup = withContext(Dispatchers.Default) { backupsRepository.get(fileName) }
-            view?.hideLoading()
-            importedBackup?.let {
-                view?.onBackupImported(it)
+            val importedBackup = withContext(Dispatchers.IO) {
+                actualBackupName = getUniqueBackupFilename(actualBackupName)
+                backupsRepository.import(fileUri, actualBackupName.plus(mimeSuffix))
+                backupsRepository.get("$actualBackupName.$MIME_TYPE")
+            }
+            view?.let {
+                it.hideLoading()
+                if (importedBackup != null) {
+                    it.onBackupImported(importedBackup)
+                }
+                if (fileName != actualBackupName.plus(".$MIME_TYPE")) {
+                    it.showBackupCreatedWithDifferentNameMessage(actualBackupName)
+                }
             }
         }
     }
