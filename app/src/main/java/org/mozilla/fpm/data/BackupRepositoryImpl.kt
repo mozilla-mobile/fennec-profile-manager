@@ -9,7 +9,6 @@ import android.content.Context
 import android.util.Log
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
-import org.mozilla.fpm.utils.CryptUtils
 import org.mozilla.fpm.utils.Utils
 import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.getCryptedStoragePath
@@ -39,15 +38,7 @@ object BackupRepositoryImpl : BackupRepository {
 
         if (deployPath != null) {
             // compress everything
-            ZipUtils().compress(deployPath, "${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE")
-
-            // now encrypt the archive
-            CryptUtils().encrypt(
-                FileInputStream("${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE"),
-                FileOutputStream("${getBackupStoragePath(ctx)}/$k.$MIME_TYPE")
-            )
-            // delete the temporary file
-            File("${getBackupStoragePath(ctx)}/${k}_arch.$MIME_TYPE").delete()
+            ZipUtils().compress(deployPath, "${getBackupStoragePath(ctx)}/$k.$MIME_TYPE")
 
             // write the signature
             val fos = FileOutputStream("${getBackupStoragePath(ctx)}/$k.$MIME_TYPE", true)
@@ -103,17 +94,12 @@ object BackupRepositoryImpl : BackupRepository {
             if (sign != null) {
                 val unsingedBytes =
                     backupFile.readBytes().dropLast(sign.toByteArray().size).toByteArray()
-                FileOutputStream("${getBackupStoragePath(ctx)}/${name}_temp").write(unsingedBytes)
+                FileOutputStream("${getCryptedStoragePath(ctx)}/$name").write(unsingedBytes)
             }
 
-            CryptUtils().decrypt(
-                FileInputStream("${getBackupStoragePath(ctx)}/${name}_temp"),
-                FileOutputStream("${getCryptedStoragePath(ctx)}/$name")
-            )
             ZipUtils().extract("${getCryptedStoragePath(ctx)}/$name", getBackupDeployPath())
 
             // delete the temp files
-            File("${getBackupStoragePath(ctx)}/${name}_temp").delete()
             File("${getCryptedStoragePath(ctx)}/$name").delete()
             return
         }
