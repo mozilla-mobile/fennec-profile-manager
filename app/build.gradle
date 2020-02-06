@@ -23,18 +23,6 @@ android {
                 "{" + "\"org.mozilla.fennec_andrei.a.lazar.sharedID\"," +
                         "\"org.mozilla.fennec.sharedID\"," +
                         "\"org.mozilla.firefox.sharedID\"" + "}"
-
-        // the secret key size depends on the algorithm used for encrypting / decrypting
-        def secretKeySizeReq = 32
-        def secretKeyFilename = "secret.key"
-        def file = new File(secretKeyFilename)
-        assert file.exists() : "\"$secretKeyFilename\" file not found"
-        assert file.canRead() : "\"$secretKeyFilename\" file cannot be read"
-        def secretKey = file.text.replace("\n", "")
-        assert (secretKey.bytes.length == secretKeySizeReq) :
-                "Secret key declared in the \"$secretKeyFilename\" file has ${secretKey.bytes.length} bytes." +
-                        "\nNeed it to have $secretKeySizeReq bytes.\n"
-        buildConfigField "String", "SECRET_KEY", '"' + secretKey + '"'
     }
 
     buildTypes {
