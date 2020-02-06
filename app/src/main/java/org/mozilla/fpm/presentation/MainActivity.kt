@@ -20,7 +20,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,11 +34,9 @@ import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
 import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
-import org.mozilla.fpm.utils.Utils.Companion.getBackupStoragePath
 import org.mozilla.fpm.utils.Utils.Companion.getFileNameFromUri
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.Utils.Companion.showMessage
-import java.io.File
 
 class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.MenuListener {
     private lateinit var presenter: MainPresenter
@@ -143,20 +140,6 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         }
         builder.setNegativeButton(getString(R.string.no), null)
         builder.show()
-    }
-
-    override fun onShareClick(item: Backup) {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.type = "*/*"
-        shareIntent.putExtra(
-            Intent.EXTRA_STREAM,
-            FileProvider.getUriForFile(
-                this, BuildConfig.APPLICATION_ID + ".provider",
-                File("${getBackupStoragePath(this)}/${item.name}")
-            )
-        )
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(shareIntent)
     }
 
     @SuppressLint("InflateParams")

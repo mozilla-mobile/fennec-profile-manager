@@ -63,7 +63,6 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
         private val size: TextView = itemView.findViewById(R.id.size)
         private val date: TextView = itemView.findViewById(R.id.date)
         private val apply: ConstraintLayout = itemView.findViewById(R.id.apply_container)
-        private val share: ConstraintLayout = itemView.findViewById(R.id.share_container)
         private val edit: ConstraintLayout = itemView.findViewById(R.id.edit_container)
         private val delete: ConstraintLayout = itemView.findViewById(R.id.delete_container)
 
@@ -74,7 +73,6 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
             date.text = backup.createdAt
             size.text = Formatter.formatShortFileSize(itemView.context, backup.size)
             apply.setOnClickListener { listener.onApplyClick(backup) }
-            share.setOnClickListener { listener.onShareClick(backup) }
             edit.setOnClickListener { listener.onEditClick(backup, position) }
             delete.setOnClickListener { listener.onDeleteClick(backup, position) }
         }
@@ -86,7 +84,6 @@ class BackupsRVAdapter : RecyclerView.Adapter<BackupsRVAdapter.BackupViewHolder>
 
     interface MenuListener {
         fun onApplyClick(item: Backup)
-        fun onShareClick(item: Backup)
         fun onEditClick(item: Backup, position: Int)
         fun onDeleteClick(item: Backup, position: Int)
     }
