@@ -130,7 +130,7 @@ class MainPresenter : MainContract.Presenter {
                     currentDupeSuffix + 1,
                     allBackups
                 )
-                duplicatedFilename.replaceAfterLast("(", "${uniqueIncrementedSuffix})")
+                duplicatedFilename.replaceAfterLast("(", "$uniqueIncrementedSuffix)")
             }
             false -> {
                 val uniqueIncrementedSuffix = getUniqueIncrementalSuffix(
@@ -142,7 +142,9 @@ class MainPresenter : MainContract.Presenter {
     }
 
     private suspend fun getUniqueIncrementalSuffix(
-        nonSufixedFilename: String, suffixValue: Int, allBackups: List<Backup>
+        nonSufixedFilename: String,
+        suffixValue: Int,
+        allBackups: List<Backup>
     ): Int {
         // Validate that the starting value is not the incremental suffix of another existing backup
         // If it is, increment the suffix value until we have a unique one
