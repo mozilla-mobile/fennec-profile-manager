@@ -61,36 +61,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/import_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/create_fab"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_file_download_orange_24dp"
-        tools:ignore="UnusedAttribute" />
-
-    <TextView
-        android:id="@+id/import_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bubble_background"
-        android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="16dp"
-        android:text="@string/import_prompt"
-        android:textColor="@color/firefox_orange"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/import_fab"
-        app:layout_constraintStart_toStartOf="@+id/import_fab" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

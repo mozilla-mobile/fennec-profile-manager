@@ -6,9 +6,7 @@ package org.mozilla.fpm.data
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import androidx.core.net.toFile
 import org.mozilla.fpm.BuildConfig
 import org.mozilla.fpm.models.Backup
 import org.mozilla.fpm.utils.CryptUtils
@@ -20,8 +18,6 @@ import org.mozilla.fpm.utils.ZipUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
 
 @SuppressLint("StaticFieldLeak")
 object BackupRepositoryImpl : BackupRepository {
@@ -86,17 +82,6 @@ object BackupRepositoryImpl : BackupRepository {
         }
 
         return null
-    }
-
-    override fun import(fileUri: Uri, fileName: String) {
-        if (File(getBackupStoragePath(ctx)).mkdirs() || File(getCryptedStoragePath(ctx)).mkdirs()) {
-            Log.d(javaClass.name, "Repository initialized!")
-        }
-
-        val inputStream: InputStream? = ctx.contentResolver.openInputStream(fileUri)
-        val copy = Uri.parse("file://${getBackupStoragePath(ctx)}/$fileName").toFile()
-        val outputStream: OutputStream = FileOutputStream(copy)
-        inputStream?.copyTo(outputStream, DEFAULT_BUFFER_SIZE)
     }
 
     override fun deploy(name: String) {
