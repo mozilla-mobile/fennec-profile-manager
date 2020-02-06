@@ -4,11 +4,9 @@
 
 package org.mozilla.fpm.data
 
-import android.net.Uri
 import org.mozilla.fpm.models.Backup
 
 interface BackupRepository : Repository<Backup, String> {
-    fun import(fileUri: Uri, fileName: String)
     fun deploy(name: String)
     fun getFileSignature(path: String): String?
 }

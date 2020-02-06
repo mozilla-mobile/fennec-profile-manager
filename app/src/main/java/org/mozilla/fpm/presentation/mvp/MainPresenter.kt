@@ -4,7 +4,6 @@
 
 package org.mozilla.fpm.presentation.mvp
 
-import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,28 +25,6 @@ class MainPresenter : MainContract.Presenter {
             val backups = withContext(Dispatchers.Default) { backupsRepository.getAll() }
             view?.hideLoading()
             view?.onBackupsLoaded(backups)
-        }
-    }
-
-    override fun importBackup(fileUri: Uri, fileName: String) {
-        val mimeSuffix = ".$MIME_TYPE"
-        var actualBackupName = fileName.substringBefore(mimeSuffix)
-        GlobalScope.launch(Dispatchers.Main) {
-            view?.showLoading()
-            val importedBackup = withContext(Dispatchers.IO) {
-                actualBackupName = getUniqueBackupFilename(actualBackupName)
-                backupsRepository.import(fileUri, actualBackupName.plus(mimeSuffix))
-                backupsRepository.get("$actualBackupName.$MIME_TYPE")
-            }
-            view?.let {
-                it.hideLoading()
-                if (importedBackup != null) {
-                    it.onBackupImported(importedBackup)
-                }
-                if (fileName != actualBackupName.plus(".$MIME_TYPE")) {
-                    it.showBackupCreatedWithDifferentNameMessage(actualBackupName)
-                }
-            }
         }
     }
 

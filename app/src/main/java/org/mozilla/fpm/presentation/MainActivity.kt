@@ -5,13 +5,9 @@
 package org.mozilla.fpm.presentation
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.MotionEvent
 import android.view.MotionEvent.ACTION_DOWN
@@ -34,7 +30,6 @@ import org.mozilla.fpm.presentation.mvp.MainContract
 import org.mozilla.fpm.presentation.mvp.MainPresenter
 import org.mozilla.fpm.utils.PermissionUtils.Companion.checkStoragePermission
 import org.mozilla.fpm.utils.PermissionUtils.Companion.validateStoragePermissionOrShowRationale
-import org.mozilla.fpm.utils.Utils.Companion.getFileNameFromUri
 import org.mozilla.fpm.utils.Utils.Companion.makeFirefoxPackageContext
 import org.mozilla.fpm.utils.Utils.Companion.showMessage
 
@@ -55,14 +50,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         backups_rv.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
             override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
                 when (e.action) {
-                    ACTION_DOWN -> {
-                        create_fab.hide()
-                        import_fab.hide()
-                    }
-                    ACTION_UP -> {
-                        create_fab.show()
-                        import_fab.show()
-                    }
+                    ACTION_DOWN -> create_fab.hide()
+                    ACTION_UP -> create_fab.show()
                 }
                 return false
             }
@@ -90,13 +79,6 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         create_fab.setOnClickListener {
             attemptCreate()
             hideFirstrun()
-        }
-        import_fab.setOnClickListener {
-            if (checkStoragePermission(this, IMPORT_STORAGE_REQUEST_CODE)) {
-                hideFirstrun()
-                showMessage(this, getString(R.string.import_hint))
-                launchFilePicker()
-            }
         }
     }
 
@@ -184,13 +166,11 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
 
     override fun showFirstrun() {
         create_label.visibility = View.GONE
-        import_label.visibility = View.VISIBLE
         PrefsManager.setFirstRunComplete()
     }
 
     override fun hideFirstrun() {
         create_label.visibility = View.GONE
-        import_label.visibility = View.GONE
     }
 
     override fun showLoading() {
@@ -243,15 +223,6 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     )
                 ) attemptCreate()
             }
-
-            IMPORT_STORAGE_REQUEST_CODE -> {
-                if (validateStoragePermissionOrShowRationale(
-                        this,
-                        permissions,
-                        grantResults
-                    )
-                ) launchFilePicker()
-            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -288,46 +259,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
         builder.show()
     }
 
-    private fun launchFilePicker() {
-        // Using a custom mime time the OS doesn't know about means we cannot force a filter for these files.
-        // The user will be able to select any kind of file so we should verify the picker response afterwards.
-        var pickIntent = Intent(Intent.ACTION_GET_CONTENT)
-        pickIntent.type = "*/*"
-        pickIntent = Intent.createChooser(pickIntent, getString(R.string.choose_backup))
-        startActivityForResult(pickIntent, PICK_BACKUP_RESULT_CODE)
-    }
-
-    @Suppress("NestedBlockDepth")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            PICK_BACKUP_RESULT_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val fileUri: Uri? = data?.data
-                    val fileName: String? = getFileNameFromUri(this, fileUri)
-                    if (fileUri != null && !fileName.isNullOrEmpty()) {
-                        if (fileName.endsWith(".fpm")) {
-                            presenter.importBackup(fileUri, fileName)
-                        } else {
-                            showMessage(this, getString(R.string.invalid_backup_extension_message))
-                            Log.w(TAG, "Invalid backup imported: $fileName")
-                        }
-                    } else {
-                        showMessage(this, getString(R.string.generic_error_message))
-                        Log.e(TAG, fileUri.toString())
-                    }
-                }
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     companion object {
         private val TAG = MainActivity::class.java.canonicalName
 
         private const val BACKUPS_STORAGE_REQUEST_CODE = 1001
         private const val CREATE_STORAGE_REQUEST_CODE = 1002
-        private const val IMPORT_STORAGE_REQUEST_CODE = 1003
-        private const val PICK_BACKUP_RESULT_CODE = 2001
     }
 }
