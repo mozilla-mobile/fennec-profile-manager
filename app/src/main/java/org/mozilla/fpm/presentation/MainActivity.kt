@@ -141,6 +141,11 @@ class MainActivity : AppCompatActivity(), MainContract.View, BackupsRVAdapter.Me
                     return@setPositiveButton
                 }
 
+                if (item.name.substringBefore(".$MIME_TYPE") == updatedBackupName) {
+                    showMessage(this, getString(R.string.error_input_unchanged))
+                    return@setPositiveButton
+                }
+
                 presenter.renameBackup(item, updatedBackupName, position)
             }
         }
