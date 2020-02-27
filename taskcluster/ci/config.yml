@@ -1,0 +1,37 @@
+---
+trust-domain: mobile
+treeherder:
+    group-names: {}
+
+task-priority: lowest
+
+taskgraph:
+    register: fpm_taskgraph:register
+    repositories:
+        mobile:
+            name: "fennec-profile-manager"
+    cached-task-prefix: project.mobile.fennec-profile-manager
+
+workers:
+    aliases:
+        b-android:
+            provisioner: 'mobile-{level}'
+            implementation: docker-worker
+            os: linux
+            worker-type: 'b-linux'
+        images:
+            provisioner: 'mobile-{level}'
+            implementation: docker-worker
+            os: linux
+            worker-type: 'images'
+        signing:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-signing
+            os: scriptworker
+            worker-type:
+                by-level:
+                    "3": mobile-3-signing
+                    default: mobile-t-signing
+
+scriptworker:
+    scope-prefix: project:mobile:fennec-profile-manager:releng

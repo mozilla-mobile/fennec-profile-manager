@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: fpm_taskgraph.loader.multi_dep:loader
+
+kind-dependencies:
+    - build
+
+transforms:
+    - fpm_taskgraph.transforms.multi_dep:transforms
+    - fpm_taskgraph.transforms.signing:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+primary-dependency: build
+
+group-by: build-type
+
+job-template:
+    description: Sign Fennec Profile Manager with the original Fennec key
+    index:
+        by-build-type:
+            fennec-(nightly|beta|production):
+                type: signing
+            default: {}
+    signing-format:
+      by-build-type:
+          fennec-nightly:
+              by-level:
+                  # Fennec nightly cannot have the sha256 checksums, when signed with the real key.
+                  # For more details, see
+                  # https://github.com/mozilla-releng/scriptworker-scripts/pull/102#issue-349016967
+                  '3': autograph_apk_fennec_sha1
+                  default: autograph_apk
+          default: autograph_apk
+    worker-type: signing
+    worker:
+        max-run-time: 3600
+        signing-type:
+            by-build-type:
+                fennec-nightly:
+                    by-level:
+                        '3': fennec-nightly-signing
+                        default: dep-signing
+                fennec-(beta|production):
+                    by-level:
+                        '3': fennec-production-signing
+                        default: dep-signing
+                default: dep-signing

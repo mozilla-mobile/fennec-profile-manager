@@ -93,3 +93,22 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+// -------------------------------------------------------------------------------------------------
+// Task for printing APK information for the requested variant
+// Usage: "./gradlew printVariants
+// -------------------------------------------------------------------------------------------------
+task printVariants {
+    doLast {
+        def variants = android.applicationVariants.collect {[
+                apks: it.variantData.outputScope.apkDatas.collect {[
+                        abi: 'noarch',  // There is no native code in this project
+                        fileName: it.outputFileName,
+                ]},
+                build_type: it.buildType.name,
+                flavor: it.productFlavors.get(0).name,
+                name: it.name,
+        ]}
+        println 'variants: ' + groovy.json.JsonOutput.toJson(variants)
+    }
+}

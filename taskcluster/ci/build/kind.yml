@@ -1,0 +1,42 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - fpm_taskgraph.transforms.build:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    description: Build Fennec Profile Manager from source code.
+    worker-type: b-android
+    worker:
+        docker-image: {in-tree: base}
+        max-run-time: 7200
+        chain-of-trust: true
+    run:
+        using: gradlew
+        use-caches: false
+        gradle-build-type: release
+    run-on-tasks-for: [github-push, github-pull-request]
+    # Builds generate multiple APKs with different ABIs. For each APK described
+    # by `gradlew printVariants`, an artifact will be generated. `variant` and
+    # the per-apk config from `printVariants` can be used as subsistutions in
+    # `name` and `path`.
+    apk-artifact-template:
+        type: file
+        name: public/target.{abi}.apk
+        path: '/builds/worker/checkouts/src/app/build/outputs/apk/{gradle_flavor}/{gradle_build_type}/{fileName}'
+
+jobs:
+    fennec-nightly:
+        run:
+            gradle-flavor: nightly
+    fennec-beta:
+        run:
+            gradle-flavor: beta
+    fennec-production:
+        run:
+            gradle-flavor: prod
